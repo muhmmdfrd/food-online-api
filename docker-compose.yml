@@ -1,0 +1,6 @@
+﻿services:
+  foodonline.api:
+    image: foodonline.api
+    build:
+      context: .
+      dockerfile: FoodOnline.Api/Dockerfile
