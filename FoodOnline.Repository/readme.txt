@@ -1,0 +1,1 @@
+﻿dotnet ef dbcontext scaffold "ConnectionString" Npgsql.EntityFrameworkCore.PostgreSQL -o Entities -c AppDbContext --context-dir Contexts -f
