@@ -32,4 +32,18 @@ public class AuthController : FlozaApiController
         
         return ApiOK(result);
     }
+    
+    [HttpPost("revoke")]
+    [ProducesResponseType(typeof(ApiResponse<AuthRevokeResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Revoke([FromBody] AuthRevokeRequestDto request)
+    {
+        var result = await _authHelper.RevokeAsync(request);
+        if (result == null)
+        {
+            return ApiUnauthorized();
+        }
+        
+        return ApiOK(result);
+    }
 }

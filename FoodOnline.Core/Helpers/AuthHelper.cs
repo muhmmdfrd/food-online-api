@@ -13,13 +13,15 @@ namespace FoodOnline.Core.Helpers;
 public class AuthHelper
 {
     private readonly IAuthService _service;
+    private readonly IUserService _userService;
     private readonly UserSessionHelper _userSessionHelper;
     private readonly JwtConfigs _jwtConfigs;
 
-    public AuthHelper(IAuthService service, UserSessionHelper userSessionHelper, IOptions<JwtConfigs> jwtConfigs)
+    public AuthHelper(IAuthService service, UserSessionHelper userSessionHelper, IOptions<JwtConfigs> jwtConfigs, IUserService userService)
     {
         _service = service;
         _userSessionHelper = userSessionHelper;
+        _userService = userService;
         _jwtConfigs = jwtConfigs.Value;
     }
 
@@ -46,7 +48,47 @@ public class AuthHelper
             return new AuthResponseDto
             {
                 User = user,
+                Code = sessionCode,
                 Token = token,
+            };
+        }
+    }
+    
+    public async Task<AuthRevokeResponseDto?> RevokeAsync(AuthRevokeRequestDto request)
+    {
+        using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        {
+            var valid = _userSessionHelper.CheckCode(request.Code);
+            if (valid == false)
+            {
+                return null;
+            }
+            
+            var existing = await _userSessionHelper.InvalidateSessionAsync(request.Code);
+            if (existing <= 0)
+            {
+                return null;
+            }
+            
+            var sessionCode = await _userSessionHelper.CreateAsync(request.UserId);
+            if (string.IsNullOrEmpty(sessionCode))
+            {
+                return null;
+            }
+
+            var user = await _userService.FindAsync(request.UserId);
+            if (user.Id <= 0)
+            {
+                return null;
+            }
+            
+            var token = GenerateToken(user, sessionCode);
+            transaction.Complete();
+
+            return new AuthRevokeResponseDto
+            {
+                Token = token,
+                Code = sessionCode,
             };
         }
     }

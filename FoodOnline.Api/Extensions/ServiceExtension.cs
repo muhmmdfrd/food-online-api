@@ -147,7 +147,7 @@ public static class ServiceExtension
                     }
                     
                     var helper = context.HttpContext.RequestServices.GetRequiredService<UserSessionHelper>();
-                    var isValid = helper.CheckCodeAsync(code);
+                    var isValid = helper.CheckCode(code);
                     if (isValid)
                     {
                         return Task.CompletedTask;

@@ -16,7 +16,7 @@ public class UserSessionHelper
         return _service.CreateAsync(userId);
     }
 
-    public bool CheckCodeAsync(string code)
+    public bool CheckCode(string code)
     {
         return _service.CheckCode(code);
     }

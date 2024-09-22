@@ -39,6 +39,16 @@ public class UsersController : FlozaApiController
         var result = await _helper.FindAsync(id);
         return ApiOK(result);
     }
+    
+    [HttpGet("find/{id:long}")]
+    [ProducesResponseType(typeof(ApiResponse<UserViewDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> FindA([FromRoute] long id)
+    {
+        var result = await _helper.FindAsync(id);
+        return Ok(result);
+    }
 
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
