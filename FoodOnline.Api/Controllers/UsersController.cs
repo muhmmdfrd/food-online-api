@@ -29,6 +29,16 @@ public class UsersController : FlozaApiController
         var result = await _helper.GetPagedAsync(filter);
         return ApiOK(result);
     }
+    
+    [HttpGet("{id:long}")]
+    [ProducesResponseType(typeof(ApiResponse<UserViewDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status404NotFound)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Find([FromRoute] long id)
+    {
+        var result = await _helper.FindAsync(id);
+        return ApiOK(result);
+    }
 
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
@@ -44,4 +54,35 @@ public class UsersController : FlozaApiController
 
         return ApiCreated();
     }
+    
+    [HttpPut]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Update([FromBody] UserUpdDto dto)
+    {
+        var affected = await _helper.UpdateAsync(dto, CurrentUser);
+        if (affected <= 0)
+        {
+            return ApiDataInvalid("User not updated.");
+        }
+
+        return ApiOK("User updated.");
+    }
+    
+    [HttpDelete("{id:long}")]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Delete([FromRoute] long id)
+    {
+        var affected = await _helper.DeleteAsync(id, CurrentUser, false);
+        if (affected <= 0)
+        {
+            return ApiDataInvalid("User not deleted.");
+        }
+
+        return ApiOK("User deleted.");
+    }
+    
 }

@@ -14,18 +14,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodOnline.Core.Services;
 
-public class UserService : IUserService
+public class PositionService : IPositionService
 {
-    private readonly IFlozaRepo<User, AppDbContext> _repo;
+    private readonly IFlozaRepo<Position, AppDbContext> _repo;
     private readonly IMapper _mapper;
 
-    public UserService(IFlozaRepo<User, AppDbContext> repo, IMapper mapper)
+    public PositionService(IFlozaRepo<Position, AppDbContext> repo, IMapper mapper)
     {
         _repo = repo;
         _mapper = mapper;
     }
 
-    public async Task<Pagination<UserViewDto>> GetPagedAsync(UserFilter filter)
+    public async Task<Pagination<PositionViewDto>> GetPagedAsync(PositionFilter filter)
     {
         var query = _repo.AsQueryable.AsNoTracking().Where(q => q.DataStatusId == (int)DataStatusEnum.Active);
         var total = query.Count();
@@ -38,13 +38,13 @@ public class UserService : IUserService
         }
 
         var result = query
-            .ProjectTo<UserViewDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<PositionViewDto>(_mapper.ConfigurationProvider)
             .SortBy(filter.SortName, filter.SortDir)
             .Skip(filter.Skip)
             .Take(filter.Size)
             .ToList();
 
-        return new Pagination<UserViewDto>
+        return new Pagination<PositionViewDto>
         {
             Size = filter.Size,
             Data = result,
@@ -53,38 +53,38 @@ public class UserService : IUserService
         };
     }
 
-    public async Task<List<UserViewDto>> GetListAsync()
+    public async Task<List<PositionViewDto>> GetListAsync()
     {
         return _repo.AsQueryable
             .AsNoTracking()
-            .ProjectTo<UserViewDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<PositionViewDto>(_mapper.ConfigurationProvider)
             .Where(q => q.DataStatusId == (int)DataStatusEnum.Active)
             .ToList();
     }
 
-    public async Task<UserViewDto> FindAsync(long id)
+    public async Task<PositionViewDto> FindAsync(long id)
     {
-        var user = _repo.AsQueryable.AsNoTracking().ProjectTo<UserViewDto>(_mapper.ConfigurationProvider).FirstOrDefault(q => q.Id == id);
+        var user = _repo.AsQueryable.AsNoTracking().FirstOrDefault(q => q.Id == id);
         if (user == null)
         {
-            throw new RecordNotFoundException("User not found.");
+            throw new RecordNotFoundException("Position not found.");
         }
-
-        return user;
+        
+        return _mapper.Map<PositionViewDto>(user);
     }
 
-    public Task<int> CreateAsync(UserAddDto value)
+    public Task<int> CreateAsync(PositionAddDto value)
     {
-        var entity = _mapper.Map<User>(value);
+        var entity = _mapper.Map<Position>(value);
         return _repo.AddAsync(entity);
     }
 
-    public Task<int> UpdateAsync(UserUpdDto value)
+    public Task<int> UpdateAsync(PositionUpdDto value)
     {
         var existing = _repo.AsQueryable.FirstOrDefault(q => q.Id == value.Id);
         if (existing == null)
         {
-            throw new RecordNotFoundException("User not found.");
+            throw new RecordNotFoundException("Position not found.");
         }
 
         _mapper.Map(value, existing);
@@ -96,7 +96,7 @@ public class UserService : IUserService
         var entity = _repo.AsQueryable.FirstOrDefault(q => q.Id == id);
         if (entity == null)
         {
-            throw new RecordNotFoundException("User not found.");
+            throw new RecordNotFoundException("Position not found.");
         }
 
         return _repo.DeleteAsync(entity);
@@ -112,7 +112,7 @@ public class UserService : IUserService
         var entity = _repo.AsQueryable.FirstOrDefault(q => q.Id == id);
         if (entity == null)
         {
-            throw new RecordNotFoundException("User not found.");
+            throw new RecordNotFoundException("Position not found.");
         }
         
         entity.ModifiedBy = currentUser.Id;

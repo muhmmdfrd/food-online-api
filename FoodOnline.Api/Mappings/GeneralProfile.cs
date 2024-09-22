@@ -23,5 +23,10 @@ public class GeneralProfile : Profile
             .ReverseMap();
         CreateMap<RoleAddDto, Role>();
         CreateMap<RoleUpdDto, Role>();
+
+        CreateMap<Position, PositionViewDto>()
+            .ReverseMap();
+        CreateMap<PositionAddDto, Position>();
+        CreateMap<PositionUpdDto, Position>();
     }
 }

@@ -25,7 +25,7 @@ services.AddDbContext(builder.Configuration);
 services.RegisterServices();
 services.RegisterHelpers();
 services.RegisterAppSettings(builder.Configuration);
-services.RegisterRedis(builder.Configuration);
+// services.RegisterRedis(builder.Configuration);
 services.ConfigureCors();
 services.ConfigureJwtAuthentication();
 services.AddEndpointsApiExplorer();
