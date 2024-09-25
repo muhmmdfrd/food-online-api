@@ -1,4 +1,6 @@
-﻿using Flozacode.Models;
+﻿using System;
+using System.Collections.Generic;
+using Flozacode.Models;
 using FoodOnline.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
 
@@ -18,6 +20,12 @@ public partial class AppDbContext : Dbs
 
     public virtual DbSet<Merchant> Merchants { get; set; }
 
+    public virtual DbSet<Order> Orders { get; set; }
+
+    public virtual DbSet<OrderDetail> OrderDetails { get; set; }
+
+    public virtual DbSet<OrderPayment> OrderPayments { get; set; }
+
     public virtual DbSet<Position> Positions { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
@@ -25,7 +33,7 @@ public partial class AppDbContext : Dbs
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
-
+    
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Menu>(entity =>
@@ -91,6 +99,101 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.Name)
                 .HasMaxLength(100)
                 .HasColumnName("name");
+        });
+
+        modelBuilder.Entity<Order>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("order_pkey");
+
+            entity.ToTable("order");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Code)
+                .HasMaxLength(50)
+                .HasColumnName("code");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("created_by");
+            entity.Property(e => e.Date)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("date");
+            entity.Property(e => e.ModifiedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("modified_at");
+            entity.Property(e => e.ModifiedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("modified_by");
+            entity.Property(e => e.StatusId).HasColumnName("status_id");
+        });
+
+        modelBuilder.Entity<OrderDetail>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("order_detail_pkey");
+
+            entity.ToTable("order_detail");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("created_by");
+            entity.Property(e => e.MenuId).HasColumnName("menu_id");
+            entity.Property(e => e.MenuName)
+                .HasMaxLength(100)
+                .HasColumnName("menu_name");
+            entity.Property(e => e.ModifiedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("modified_at");
+            entity.Property(e => e.ModifiedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("modified_by");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.Price).HasColumnName("price");
+            entity.Property(e => e.Qty).HasColumnName("qty");
+            entity.Property(e => e.Total).HasColumnName("total");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
+            entity.Property(e => e.UserName)
+                .HasMaxLength(100)
+                .HasColumnName("user_name");
+        });
+
+        modelBuilder.Entity<OrderPayment>(entity =>
+        {
+            entity.HasKey(e => e.Id).HasName("order_payment_pkey");
+
+            entity.ToTable("order_payment");
+
+            entity.Property(e => e.Id).HasColumnName("id");
+            entity.Property(e => e.Cashback).HasColumnName("cashback");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.CreatedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("created_by");
+            entity.Property(e => e.GrandTotal).HasColumnName("grand_total");
+            entity.Property(e => e.ModifiedAt)
+                .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("modified_at");
+            entity.Property(e => e.ModifiedBy)
+                .HasDefaultValue(1L)
+                .HasColumnName("modified_by");
+            entity.Property(e => e.OrderId).HasColumnName("order_id");
+            entity.Property(e => e.PaymentStatusId).HasColumnName("payment_status_id");
+            entity.Property(e => e.TotalPayment).HasColumnName("total_payment");
+            entity.Property(e => e.UserId).HasColumnName("user_id");
         });
 
         modelBuilder.Entity<Position>(entity =>

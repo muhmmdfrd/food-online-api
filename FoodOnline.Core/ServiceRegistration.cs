@@ -17,6 +17,9 @@ public static class ServiceRegistration
         services.AddScoped<IUserSessionService, UserSessionService>();
         services.AddScoped<IRoleService, RoleService>();
         services.AddScoped<IPositionService, PositionService>();
+        services.AddScoped<IOrderService, OrderService>();
+        services.AddScoped<IOrderDetailService, OrderDetailService>();
+        services.AddScoped<IOrderPaymentService, OrderPaymentService>();
     }
 
     public static void RegisterHelpers(this IServiceCollection services)
@@ -26,6 +29,9 @@ public static class ServiceRegistration
         services.AddScoped<UserSessionHelper>();
         services.AddScoped<RoleHelper>();
         services.AddScoped<PositionHelper>();
+        services.AddScoped<OrderHelper>();
+        services.AddScoped<OrderDetailHelper>();
+        services.AddScoped<OrderPaymentHelper>();
     }
     
     public static void AddDbContext(this IServiceCollection services, IConfiguration config)

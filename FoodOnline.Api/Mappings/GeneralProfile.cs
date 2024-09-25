@@ -1,5 +1,6 @@
 ﻿using AutoMapper;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Repository.Entities;
 
 namespace FoodOnline.Api.Mappings;
@@ -28,5 +29,21 @@ public class GeneralProfile : Profile
             .ReverseMap();
         CreateMap<PositionAddDto, Position>();
         CreateMap<PositionUpdDto, Position>();
+        
+        CreateMap<Order, OrderViewDto>()
+            .ForMember(d => d.StatusName, conf => conf.MapFrom(e => ((OrderStatusEnum)e.StatusId).ToString()))
+            .ReverseMap();
+        CreateMap<OrderAddDto, Order>();
+        CreateMap<OrderUpdDto, Order>();
+
+        CreateMap<OrderDetail, OrderDetailDto>()
+            .ReverseMap();
+        CreateMap<OrderDetailAddDto, OrderDetail>();
+        CreateMap<OrderDetailUpdDto, OrderDetail>();
+
+        CreateMap<OrderPayment, OrderPaymentDto>()
+            .ReverseMap();
+        CreateMap<OrderPaymentAddDto, OrderPayment>();
+        CreateMap<OrderPaymentUpdDto, OrderPayment>();
     }
 }
