@@ -26,6 +26,7 @@ public class GeneralProfile : Profile
         CreateMap<RoleUpdDto, Role>();
 
         CreateMap<Position, PositionViewDto>()
+            .ForMember(d => d.DataStatusName, conf => conf.MapFrom(e => ((DataStatusEnum)e.DataStatusId).ToString()))
             .ReverseMap();
         CreateMap<PositionAddDto, Position>();
         CreateMap<PositionUpdDto, Position>();
@@ -45,5 +46,17 @@ public class GeneralProfile : Profile
             .ReverseMap();
         CreateMap<OrderPaymentAddDto, OrderPayment>();
         CreateMap<OrderPaymentUpdDto, OrderPayment>();
+        
+        CreateMap<Menu, MenuViewDto>()
+            .ForMember(d => d.DataStatusName, conf => conf.MapFrom(e => ((DataStatusEnum)e.DataStatusId).ToString()))
+            .ReverseMap();
+        CreateMap<MenuAddDto, Menu>();
+        CreateMap<MenuUpdDto, Menu>();
+        
+        CreateMap<Merchant, MerchantViewDto>()
+            .ForMember(d => d.DataStatusName, conf => conf.MapFrom(e => ((DataStatusEnum)e.DataStatusId).ToString()))
+            .ReverseMap();
+        CreateMap<MerchantAddDto, Merchant>();
+        CreateMap<MerchantUpdDto, Merchant>();
     }
 }

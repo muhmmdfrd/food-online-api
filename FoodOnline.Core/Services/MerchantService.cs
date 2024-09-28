@@ -14,18 +14,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace FoodOnline.Core.Services;
 
-public class MenuService : IMenuService
+public class MerchantService : IMerchantService
 {
-    private readonly IFlozaRepo<Menu, AppDbContext> _repo;
+    private readonly IFlozaRepo<Merchant, AppDbContext> _repo;
     private readonly IMapper _mapper;
 
-    public MenuService(IFlozaRepo<Menu, AppDbContext> repo, IMapper mapper)
+    public MerchantService(IFlozaRepo<Merchant, AppDbContext> repo, IMapper mapper)
     {
         _repo = repo;
         _mapper = mapper;
     }
 
-    public async Task<Pagination<MenuViewDto>> GetPagedAsync(MenuFilter filter)
+    public async Task<Pagination<MerchantViewDto>> GetPagedAsync(MerchantFilter filter)
     {
         var query = _repo.AsQueryable.AsNoTracking().Where(q => q.DataStatusId == (int)DataStatusEnum.Active);
         var total = query.Count();
@@ -37,20 +37,14 @@ public class MenuService : IMenuService
             filtered = query.Count();
         }
 
-        if (filter.MerchantId != null)
-        {
-            query = query.Where(q => q.MerchantId == filter.MerchantId);
-            filtered = query.Count();
-        }
-
         var result = query
-            .ProjectTo<MenuViewDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<MerchantViewDto>(_mapper.ConfigurationProvider)
             .SortBy(filter.SortName, filter.SortDir)
             .Skip(filter.Skip)
             .Take(filter.Size)
             .ToList();
 
-        return new Pagination<MenuViewDto>
+        return new Pagination<MerchantViewDto>
         {
             Size = filter.Size,
             Data = result,
@@ -59,38 +53,38 @@ public class MenuService : IMenuService
         };
     }
 
-    public async Task<List<MenuViewDto>> GetListAsync()
+    public async Task<List<MerchantViewDto>> GetListAsync()
     {
         return _repo.AsQueryable
             .AsNoTracking()
-            .ProjectTo<MenuViewDto>(_mapper.ConfigurationProvider)
+            .ProjectTo<MerchantViewDto>(_mapper.ConfigurationProvider)
             .Where(q => q.DataStatusId == (int)DataStatusEnum.Active)
             .ToList();
     }
 
-    public async Task<MenuViewDto> FindAsync(long id)
+    public async Task<MerchantViewDto> FindAsync(long id)
     {
         var user = _repo.AsQueryable.AsNoTracking().FirstOrDefault(q => q.Id == id);
         if (user == null)
         {
-            throw new RecordNotFoundException("Menu not found.");
+            throw new RecordNotFoundException("Merchant not found.");
         }
         
-        return _mapper.Map<MenuViewDto>(user);
+        return _mapper.Map<MerchantViewDto>(user);
     }
 
-    public Task<int> CreateAsync(MenuAddDto value)
+    public Task<int> CreateAsync(MerchantAddDto value)
     {
-        var entity = _mapper.Map<Menu>(value);
+        var entity = _mapper.Map<Merchant>(value);
         return _repo.AddAsync(entity);
     }
 
-    public Task<int> UpdateAsync(MenuUpdDto value)
+    public Task<int> UpdateAsync(MerchantUpdDto value)
     {
         var existing = _repo.AsQueryable.FirstOrDefault(q => q.Id == value.Id);
         if (existing == null)
         {
-            throw new RecordNotFoundException("Menu not found.");
+            throw new RecordNotFoundException("Merchant not found.");
         }
 
         _mapper.Map(value, existing);
@@ -102,7 +96,7 @@ public class MenuService : IMenuService
         var entity = _repo.AsQueryable.FirstOrDefault(q => q.Id == id);
         if (entity == null)
         {
-            throw new RecordNotFoundException("Menu not found.");
+            throw new RecordNotFoundException("Merchant not found.");
         }
 
         return _repo.DeleteAsync(entity);
@@ -118,7 +112,7 @@ public class MenuService : IMenuService
         var entity = _repo.AsQueryable.FirstOrDefault(q => q.Id == id);
         if (entity == null)
         {
-            throw new RecordNotFoundException("Menu not found.");
+            throw new RecordNotFoundException("Merchant not found.");
         }
         
         entity.ModifiedBy = currentUser.Id;

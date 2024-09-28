@@ -1,24 +1,21 @@
-﻿using Flozacode.Models.Paginations;
-using FoodOnline.Core.Enums;
-using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
+using Flozacode.Models.Paginations;
 
 namespace FoodOnline.Core.Dtos;
 
-public class PositionDto
+public class MerchantDto
 {
     public string Name { get; set; } = null!;
-    
-    [JsonIgnore]
-    public int DataStatusId { get; set; } = (int)DataStatusEnum.Active;
+    public int DataStatusId { get; set; }
 }
 
-public class PositionViewDto : PositionDto
+public class MerchantViewDto : MerchantDto
 {
     public long Id { get; set; }
     public string DataStatusName { get; set; } = null!;
 }
 
-public class PositionAddDto : PositionDto
+public class MerchantAddDto : MerchantDto
 {
     [JsonIgnore]
     public long? CreatedBy { get; set; }
@@ -33,7 +30,7 @@ public class PositionAddDto : PositionDto
     public DateTime? ModifiedAt { get; set; }
 }
 
-public class PositionUpdDto : PositionDto
+public class MerchantUpdDto : MerchantDto
 {
     public long Id { get; set; }
     
@@ -44,4 +41,6 @@ public class PositionUpdDto : PositionDto
     public DateTime? ModifiedAt { get; set; }
 }
 
-public class PositionFilter : TableFilter {}
+public class MerchantFilter : TableFilter
+{
+}

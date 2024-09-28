@@ -21,6 +21,7 @@ public static class ServiceRegistration
         services.AddScoped<IOrderDetailService, OrderDetailService>();
         services.AddScoped<IOrderPaymentService, OrderPaymentService>();
         services.AddScoped<IMenuService, MenuService>();
+        services.AddScoped<IMerchantService, MerchantService>();
     }
 
     public static void RegisterHelpers(this IServiceCollection services)
@@ -34,6 +35,7 @@ public static class ServiceRegistration
         services.AddScoped<OrderDetailHelper>();
         services.AddScoped<OrderPaymentHelper>();
         services.AddScoped<MenuHelper>();
+        services.AddScoped<MerchantHelper>();
     }
     
     public static void AddDbContext(this IServiceCollection services, IConfiguration config)

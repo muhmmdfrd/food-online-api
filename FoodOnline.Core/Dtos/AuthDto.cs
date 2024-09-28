@@ -12,6 +12,11 @@ public class AuthRevokeRequestDto
     public long UserId { get; set; }
 }
 
+public class LogoutRequestDto
+{
+    public string Code { get; set; } = null!;
+}
+
 public class AuthResponseDto
 {
     public string Code { get; set; } = null!;

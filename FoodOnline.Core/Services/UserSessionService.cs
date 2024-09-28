@@ -47,4 +47,12 @@ public class UserSessionService : IUserSessionService
        
        return await _repo.UpdateAsync(existing);
     }
+
+    public async Task<string?> GetLastSessionAsync(long userId)
+    {
+        var existing = _repo.AsQueryable.FirstOrDefault(q => q.UserId == userId && q.IsValid);
+        if (existing == null) return null;
+
+        return existing.Code;
+    }
 }

@@ -6,31 +6,31 @@ using FoodOnline.Core.Models;
 
 namespace FoodOnline.Core.Helpers;
 
-public class MenuHelper
+public class MerchantHelper
 {
-    private readonly IMenuService _service;
+    private readonly IMerchantService _service;
 
-    public MenuHelper(IMenuService service)
+    public MerchantHelper(IMerchantService service)
     {
         _service = service;
     }
-    
-    public Task<Pagination<MenuViewDto>> GetPagedAsync(MenuFilter filter)
+
+    public Task<Pagination<MerchantViewDto>> GetPagedAsync(MerchantFilter filter)
     {
         return _service.GetPagedAsync(filter);
     }
 
-    public Task<List<MenuViewDto>> GetListAsync()
+    public Task<List<MerchantViewDto>> GetListAsync()
     {
         return _service.GetListAsync();
     }
 
-    public Task<MenuViewDto> FindAsync(long id)
+    public Task<MerchantViewDto> FindAsync(long id)
     {
         return _service.FindAsync(id);
     }
 
-    public async Task<int> CreateAsync(MenuAddDto value, CurrentUser currentUser)
+    public async Task<int> CreateAsync(MerchantAddDto value, CurrentUser currentUser)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
@@ -48,7 +48,7 @@ public class MenuHelper
         }
     }
 
-    public Task<int> UpdateAsync(MenuUpdDto value, CurrentUser currentUser)
+    public Task<int> UpdateAsync(MerchantUpdDto value, CurrentUser currentUser)
     {
         value.ModifiedBy = currentUser.Id;
         value.ModifiedAt = DateTime.UtcNow;

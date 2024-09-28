@@ -35,6 +35,12 @@ public class AuthHelper
 
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
+            var existingSession = await _userSessionHelper.GetLastSessionAsync(user.Id);
+            if (!string.IsNullOrEmpty(existingSession))
+            {
+                await _userSessionHelper.InvalidateSessionAsync(existingSession);
+            }
+            
             var sessionCode = await _userSessionHelper.CreateAsync(user.Id);
             if (string.IsNullOrEmpty(sessionCode))
             {
@@ -65,7 +71,7 @@ public class AuthHelper
             }
             
             var existing = await _userSessionHelper.InvalidateSessionAsync(request.Code);
-            if (existing <= 0)
+            if (existing <= 0 || existing == null)
             {
                 return null;
             }
@@ -91,6 +97,16 @@ public class AuthHelper
                 Code = sessionCode,
             };
         }
+    }
+
+    public async Task<bool> LogoutAsync(LogoutRequestDto request)
+    {
+        var existing = await _userSessionHelper.InvalidateSessionAsync(request.Code);
+        if (existing <= 0 || existing == null)
+        {
+            return false;
+        }
+        return true;
     }
     
     private string GenerateToken(UserViewDto user, string sessionCode)

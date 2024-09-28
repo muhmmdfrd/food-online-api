@@ -46,4 +46,18 @@ public class AuthController : FlozaApiController
         
         return ApiOK(result);
     }
+    
+    [HttpPost("logout")]
+    [ProducesResponseType(typeof(ApiResponse<AuthRevokeResponseDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> Logout([FromBody] LogoutRequestDto request)
+    {
+        var result = await _authHelper.LogoutAsync(request);
+        if (result)
+        {
+            return ApiOK("User logged out.");
+        }
+
+        return ApiDataInvalid("Logout failed.");
+    }
 }

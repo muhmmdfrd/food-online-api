@@ -25,4 +25,9 @@ public class UserSessionHelper
     {
         return _service.InvalidateSessionAsync(code);
     }
+
+    public Task<string?> GetLastSessionAsync(long userId)
+    {
+        return _service.GetLastSessionAsync(userId);
+    }
 }

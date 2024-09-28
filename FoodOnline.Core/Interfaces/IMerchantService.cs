@@ -4,7 +4,7 @@ using FoodOnline.Core.Models;
 
 namespace FoodOnline.Core.Interfaces;
 
-public interface IRoleService : IFlozaPagination<RoleViewDto, RoleAddDto, RoleUpdDto, RoleFilter>
+public interface IMerchantService : IFlozaPagination<MerchantViewDto, MerchantAddDto, MerchantUpdDto, MerchantFilter>
 {
     Task<int> DeleteAsync(long id, CurrentUser currentUser, bool isHardDelete = false);
 }

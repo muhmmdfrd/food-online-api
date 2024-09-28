@@ -23,10 +23,16 @@ public class MenuDto
     public DateTime? ModifiedAt { get; set; }
 }
 
-public class MenuViewDto : MenuDto{}
+public class MenuViewDto : MenuDto
+{
+    public string DataStatusName { get; set; } = null!;
+}
 
 public class MenuAddDto : MenuDto{}
 
 public class MenuUpdDto : MenuDto{}
 
-public class MenuFilter : TableFilter{}
+public class MenuFilter : TableFilter
+{
+    public long? MerchantId { get; set; }
+}
