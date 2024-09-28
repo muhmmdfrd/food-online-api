@@ -50,3 +50,16 @@ public class OrderDetailFilter : TableFilter
 {
     public long OrderId { get; set; }
 }
+
+public class OrderDetailAddRequestDto
+{
+    public long OrderId { get; set; }
+    public long UserId { get; set; } 
+    public List<OrderDetailAddChildDto> Details { get; set; } = null!;
+}
+
+public class OrderDetailAddChildDto
+{
+    public long MenuId { get; set; }
+    public int Qty { get; set; }
+}

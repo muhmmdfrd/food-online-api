@@ -35,9 +35,15 @@ public class OrdersController : FlozaApiController
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] OrderAddDto dto)
+    public async Task<IActionResult> Create()
     {
-        dto.Code = _helper.GenerateCode();
+        var dto = new OrderAddDto
+        {
+            Code = _helper.GenerateCode(),
+            Date = DateTime.UtcNow,
+            StatusId = (int)OrderStatusEnum.Active,
+        };
+        
         var affected = await _helper.CreateAsync(dto, CurrentUser);
         if (affected <= 0)
         {

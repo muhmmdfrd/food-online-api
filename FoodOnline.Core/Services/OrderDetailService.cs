@@ -82,4 +82,10 @@ public class OrderDetailService : IOrderDetailService
     {
         throw new NotImplementedException();
     }
+
+    public Task<int> CreateMultipleAsync(List<OrderDetailAddDto> values)
+    {
+        var entities = _mapper.Map<List<OrderDetail>>(values);
+        return _repo.AddMultipleAsync(entities);
+    }
 }
