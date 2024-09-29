@@ -49,6 +49,7 @@ public class GeneralProfile : Profile
         
         CreateMap<Menu, MenuViewDto>()
             .ForMember(d => d.DataStatusName, conf => conf.MapFrom(e => ((DataStatusEnum)e.DataStatusId).ToString()))
+            .ForMember(d => d.MerchantName, conf => conf.MapFrom(e => e.Merchant.Name))
             .ReverseMap();
         CreateMap<MenuAddDto, Menu>();
         CreateMap<MenuUpdDto, Menu>();

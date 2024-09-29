@@ -26,6 +26,7 @@ public class MenuDto
 public class MenuViewDto : MenuDto
 {
     public string DataStatusName { get; set; } = null!;
+    public string MerchantName { get; set; } = null!;
 }
 
 public class MenuAddDto : MenuDto{}
