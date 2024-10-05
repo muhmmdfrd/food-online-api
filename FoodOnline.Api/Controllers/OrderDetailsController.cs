@@ -34,4 +34,14 @@ public class OrderDetailsController : FlozaApiController
 
         return ApiCreated();
     }
+    
+    [HttpPost("calculate")]
+    [ProducesResponseType(typeof(ApiResponse<OrderDetailCaculateResultDto>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> Calculate([FromBody] List<OrderDetailAddChildDto> dto)
+    {
+        var result = await _helper.CalculateAsync(dto);
+        return ApiOK(result);
+    }
 }

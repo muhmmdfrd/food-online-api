@@ -1,7 +1,12 @@
 ﻿using System.Transactions;
+using Flozacode.Repository;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Core.Models;
+using FoodOnline.Repository.Contexts;
+using FoodOnline.Repository.Entities;
+using Microsoft.EntityFrameworkCore;
 
 namespace FoodOnline.Core.Helpers;
 
@@ -12,14 +17,22 @@ public class OrderDetailHelper
     private readonly IUserService _userService;
     private readonly IMenuService _menuService;
     private readonly IOrderPaymentService _orderPaymentService;
+    private readonly IFlozaRepo<Menu, AppDbContext> _menuRepo;
     
-    public OrderDetailHelper(IOrderService orderService, IOrderDetailService service, IUserService userService, IMenuService menuService, IOrderPaymentService orderPaymentService)
+    public OrderDetailHelper(
+        IOrderService orderService, 
+        IOrderDetailService service, 
+        IUserService userService, 
+        IMenuService menuService,
+        IOrderPaymentService orderPaymentService, 
+        IFlozaRepo<Menu, AppDbContext> menuRepo)
     {
         _orderService = orderService;
         _service = service;
         _userService = userService;
         _menuService = menuService;
         _orderPaymentService = orderPaymentService;
+        _menuRepo = menuRepo;
     }
 
     public async Task<int> CreateAsync(OrderDetailAddRequestDto value, CurrentUser currentUser)
@@ -102,5 +115,38 @@ public class OrderDetailHelper
             
             return affected;
         }
+    }
+
+    public Task<OrderDetailCaculateResultDto> CalculateAsync(List<OrderDetailAddChildDto> items)
+    {
+        var children = new List<OrderDetailCaculateResultItemDto>();
+        var menuIds = items.Select(q => q.MenuId).ToList();
+        var menus = _menuRepo
+            .AsQueryable
+            .AsNoTracking()
+            .Where(q =>
+                q.DataStatusId == (int)DataStatusEnum.Active &&
+                menuIds.Contains(q.Id))
+            .ToList();
+
+        for (var i = 0; i < menus.Count; i++)
+        {
+            var qty = items.First(q => q.MenuId == menus[i].Id).Qty;
+            var item = new OrderDetailCaculateResultItemDto
+            {
+                Qty = qty,
+                MenuName = menus[i].Name,
+                Total = qty * menus[i].Price
+            };
+            children.Add(item);
+        }
+
+        var result = new OrderDetailCaculateResultDto
+        {
+            Items = children,
+            GrandTotal = children.Sum(q => q.Total),
+        };
+
+        return Task.FromResult(result);
     }
 }
