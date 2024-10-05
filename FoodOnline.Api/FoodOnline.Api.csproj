@@ -35,4 +35,8 @@
       <ProjectReference Include="..\FoodOnline.Core\FoodOnline.Core.csproj" />
     </ItemGroup>
 
+    <ItemGroup>
+      <Folder Include="wwwroot\json\" />
+    </ItemGroup>
+
 </Project>

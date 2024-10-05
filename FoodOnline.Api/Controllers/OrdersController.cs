@@ -57,4 +57,10 @@ public class OrdersController : FlozaApiController
 
         return ApiCreated();
     }
+
+    [HttpPost("firebase")]
+    public IActionResult SendFirebase()
+    {
+        return ApiOK();
+    }
 }
