@@ -59,13 +59,14 @@ public class MenuService : IMenuService
         };
     }
 
-    public async Task<List<MenuViewDto>> GetListAsync()
+    public Task<List<MenuViewDto>> GetListAsync()
     {
-        return _repo.AsQueryable
+        var entities = _repo.AsQueryable
             .AsNoTracking()
-            .ProjectTo<MenuViewDto>(_mapper.ConfigurationProvider)
             .Where(q => q.DataStatusId == (int)DataStatusEnum.Active)
             .ToList();
+
+        return Task.FromResult(_mapper.Map<List<MenuViewDto>>(entities));
     }
 
     public async Task<MenuViewDto> FindAsync(long id)
