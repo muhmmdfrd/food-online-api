@@ -85,7 +85,7 @@ public class OrderDetailHelper
             var payment = _orderPaymentService.IsPaymentExist(order.Id, currentUser.Id);
             if (payment != null)
             {
-                payment.GrandTotal = orderDetailDtos.Sum(q => q.Total);
+                payment.GrandTotal += orderDetailDtos.Sum(q => q.Total);
                 affected = await _orderPaymentService.UpdateGrandTotalAsync(payment);
             }
             else
