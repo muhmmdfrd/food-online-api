@@ -4,6 +4,7 @@ using FoodOnline.Api.Models;
 using FoodOnline.Core.Dtos;
 using FoodOnline.Core.Enums;
 using FoodOnline.Core.Helpers;
+using FoodOnline.Core.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -39,7 +40,7 @@ public class OrdersController : FlozaApiController
     {
         var dto = new OrderAddDto
         {
-            Code = _helper.GenerateCode(),
+            Code = OrderUtils.GenerateCode(),
             Date = DateTime.UtcNow,
             StatusId = (int)OrderStatusEnum.Active,
         };

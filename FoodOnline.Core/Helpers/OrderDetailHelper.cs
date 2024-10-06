@@ -4,6 +4,7 @@ using FoodOnline.Core.Dtos;
 using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Core.Models;
+using FoodOnline.Core.Utils;
 using FoodOnline.Repository.Contexts;
 using FoodOnline.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -14,7 +15,6 @@ public class OrderDetailHelper
 {
     private readonly IOrderService _orderService;
     private readonly IOrderDetailService _service;
-    private readonly IUserService _userService;
     private readonly IMenuService _menuService;
     private readonly IOrderPaymentService _orderPaymentService;
     private readonly IFlozaRepo<Menu, AppDbContext> _menuRepo;
@@ -22,14 +22,12 @@ public class OrderDetailHelper
     public OrderDetailHelper(
         IOrderService orderService, 
         IOrderDetailService service, 
-        IUserService userService, 
         IMenuService menuService,
         IOrderPaymentService orderPaymentService, 
         IFlozaRepo<Menu, AppDbContext> menuRepo)
     {
         _orderService = orderService;
         _service = service;
-        _userService = userService;
         _menuService = menuService;
         _orderPaymentService = orderPaymentService;
         _menuRepo = menuRepo;
@@ -40,18 +38,13 @@ public class OrderDetailHelper
         var now = DateTime.UtcNow;
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
-            var order = await _orderService.FindAsync(value.OrderId);
+            var code = OrderUtils.GenerateCode(now);
+            var order = _orderService.GetActiveOrderByCode(code);
             if (order == null)
             {
                 return 0;
             }
     
-            var user = await _userService.FindAsync(value.UserId);
-            if (user == null)
-            {
-                return 0;
-            }
-            
             var menus = await _menuService.GetListAsync();
             var orderDetailDtos = new List<OrderDetailAddDto>();
                 
@@ -66,14 +59,14 @@ public class OrderDetailHelper
                 now = DateTime.UtcNow;
                 var dto = new OrderDetailAddDto
                 {
-                    UserName = user.Name,
-                    UserId = user.Id,
+                    UserName = currentUser.Name,
+                    UserId = currentUser.Id,
                     Price = menu.Price,
                     Qty = item.Qty,
                     Total = menu.Price * item.Qty,
                     MenuId = menu.Id,
                     MenuName = menu.Name,
-                    OrderId = value.OrderId,
+                    OrderId = order.Id,
                     CreatedBy = currentUser.Id,
                     CreatedAt = now,
                     ModifiedBy = currentUser.Id,
@@ -89,7 +82,7 @@ public class OrderDetailHelper
                 return 0;
             }
 
-            var payment = _orderPaymentService.IsPaymentExist(value.OrderId, value.UserId);
+            var payment = _orderPaymentService.IsPaymentExist(order.Id, currentUser.Id);
             if (payment != null)
             {
                 payment.GrandTotal = orderDetailDtos.Sum(q => q.Total);
@@ -99,8 +92,8 @@ public class OrderDetailHelper
             {
                 affected = await _orderPaymentService.CreateAsync(new OrderPaymentAddDto
                 {
-                    OrderId = value.OrderId,
-                    UserId = value.UserId,
+                    OrderId = order.Id,
+                    UserId = currentUser.Id,
                     GrandTotal = orderDetailDtos.Sum(q => q.Total), 
                     TotalPayment = 0,
                     Cashback = 0,
@@ -129,14 +122,14 @@ public class OrderDetailHelper
                 menuIds.Contains(q.Id))
             .ToList();
 
-        for (var i = 0; i < menus.Count; i++)
+        foreach (var t in menus)
         {
-            var qty = items.First(q => q.MenuId == menus[i].Id).Qty;
+            var qty = items.First(q => q.MenuId == t.Id).Qty;
             var item = new OrderDetailCaculateResultItemDto
             {
                 Qty = qty,
-                MenuName = menus[i].Name,
-                Total = qty * menus[i].Price
+                MenuName = t.Name,
+                Total = qty * t.Price
             };
             children.Add(item);
         }

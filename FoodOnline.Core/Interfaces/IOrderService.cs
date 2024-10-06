@@ -6,4 +6,5 @@ namespace FoodOnline.Core.Interfaces;
 public interface IOrderService : IFlozaPagination<OrderViewDto, OrderAddDto, OrderUpdDto, OrderFilter>
 {
     public bool CheckOrderActiveByCode(string code);
+    public OrderViewDto? GetActiveOrderByCode(string code);
 }

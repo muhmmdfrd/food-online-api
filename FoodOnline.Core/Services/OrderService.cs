@@ -4,6 +4,7 @@ using Flozacode.Extensions.SortExtension;
 using Flozacode.Models.Paginations;
 using Flozacode.Repository;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Repository.Contexts;
 using FoodOnline.Repository.Entities;
@@ -78,6 +79,14 @@ public class OrderService : IOrderService
 
     public bool CheckOrderActiveByCode(string code)
     {
-        return _repo.AsQueryable.AsNoTracking().Any(q => q.Code == code);
+        return _repo.AsQueryable.AsNoTracking().Any(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
+    }
+
+    public OrderViewDto? GetActiveOrderByCode(string code)
+    {
+        return _repo.AsQueryable
+            .AsNoTracking()
+            .ProjectTo<OrderViewDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefault(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
     }
 }

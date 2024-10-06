@@ -44,10 +44,4 @@ public class OrderHelper
             return result;
         }
     }
-
-    public string GenerateCode()
-    {
-        var now = DateTime.UtcNow;
-        return now.ToString("yyyyMMdd");
-    }
 }

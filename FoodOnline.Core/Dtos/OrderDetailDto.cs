@@ -53,8 +53,6 @@ public class OrderDetailFilter : TableFilter
 
 public class OrderDetailAddRequestDto
 {
-    public long OrderId { get; set; }
-    public long UserId { get; set; } 
     public List<OrderDetailAddChildDto> Details { get; set; } = null!;
 }
 
