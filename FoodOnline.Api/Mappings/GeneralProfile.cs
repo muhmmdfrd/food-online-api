@@ -37,7 +37,7 @@ public class GeneralProfile : Profile
         CreateMap<OrderAddDto, Order>();
         CreateMap<OrderUpdDto, Order>();
 
-        CreateMap<OrderDetail, OrderDetailDto>()
+        CreateMap<OrderDetail, OrderDetailViewDto>()
             .ReverseMap();
         CreateMap<OrderDetailAddDto, OrderDetail>();
         CreateMap<OrderDetailUpdDto, OrderDetail>();

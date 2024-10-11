@@ -32,6 +32,15 @@ public class OrdersController : FlozaApiController
         return ApiOK(result);
     }
     
+    [HttpGet("user/{userId:long}")]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderViewDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public IActionResult GetMyOrder([FromRoute] long userId)
+    {
+        var result = _helper.GetMyOrder(userId);
+        return ApiOK(result);
+    }
+    
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]

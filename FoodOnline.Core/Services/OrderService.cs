@@ -89,4 +89,17 @@ public class OrderService : IOrderService
             .ProjectTo<OrderViewDto>(_mapper.ConfigurationProvider)
             .FirstOrDefault(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
     }
+
+    public long? GetOrderActiveId()
+    {
+        return _repo.AsQueryable.AsNoTracking().FirstOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active)?.Id;
+    }
+
+    public List<OrderViewDto> GetMyOrder(long userId)
+    {
+        return _repo.AsQueryable.AsNoTracking()
+            .Where(q => q.OrderDetails.Any(o => o.UserId == userId))
+            .ProjectTo<OrderViewDto>(_mapper.ConfigurationProvider)
+            .ToList();
+    }
 }

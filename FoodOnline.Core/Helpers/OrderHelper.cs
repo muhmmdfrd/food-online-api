@@ -21,6 +21,11 @@ public class OrderHelper
         return _service.GetPagedAsync(filter);
     }
 
+    public List<OrderViewDto> GetMyOrder(long userId)
+    {
+        return _service.GetMyOrder(userId);
+    }
+
     public async Task<int> CreateAsync(OrderAddDto value, CurrentUser currentUser)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);

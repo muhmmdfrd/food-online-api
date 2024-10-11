@@ -33,6 +33,17 @@ public class OrderDetailHelper
         _menuRepo = menuRepo;
     }
 
+    public async Task<List<OrderDetailGroupByUser>> GetOrderToday(CurrentUser currentUser)
+    {
+        var activeOrderId = _orderService.GetOrderActiveId();
+        if (activeOrderId == null)
+        {
+            return [];
+        }
+        
+        return await _service.GetOrderDetailByOrderIdAsync(activeOrderId ?? 0, currentUser.Id);
+    }
+
     public async Task<int> CreateAsync(OrderDetailAddRequestDto value, CurrentUser currentUser)
     {
         var now = DateTime.UtcNow;

@@ -74,3 +74,17 @@ public class OrderDetailCaculateResultItemDto
     public int Qty { get; set; }
     public int Total { get; set; }
 }
+
+public class OrderDetailGroupByUser
+{
+    public string Name { get; set; } = null!;
+    public int Total { get; set; }
+    public List<OrderDetailGroupByUserItem> Details { get; set; } = [];
+}
+
+public class OrderDetailGroupByUserItem
+{
+    public string MenuName { get; set; } = null!;
+    public int Qty { get; set; }
+    public int Price { get; set; }
+}

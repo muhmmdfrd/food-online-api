@@ -20,6 +20,15 @@ public class OrderDetailsController : FlozaApiController
         _helper = helper;
     }
 
+    [HttpGet("today")]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderDetailGroupByUser>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> GetOrderToday()
+    {
+        var result = await _helper.GetOrderToday(CurrentUser);
+        return ApiOK(result);
+    }
+
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]

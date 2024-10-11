@@ -71,13 +71,13 @@ public class MenuService : IMenuService
 
     public async Task<MenuViewDto> FindAsync(long id)
     {
-        var user = _repo.AsQueryable.AsNoTracking().FirstOrDefault(q => q.Id == id);
-        if (user == null)
+        var menu = _repo.AsQueryable.AsNoTracking().ProjectTo<MenuViewDto>(_mapper.ConfigurationProvider).FirstOrDefault(q => q.Id == id);
+        if (menu == null)
         {
             throw new RecordNotFoundException("Menu not found.");
         }
-        
-        return _mapper.Map<MenuViewDto>(user);
+
+        return menu;
     }
 
     public Task<int> CreateAsync(MenuAddDto value)

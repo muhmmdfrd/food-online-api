@@ -8,10 +8,6 @@ namespace FoodOnline.Repository.Contexts;
 
 public partial class AppDbContext : Dbs
 {
-    public AppDbContext()
-    {
-    }
-
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
@@ -33,7 +29,7 @@ public partial class AppDbContext : Dbs
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Menu>(entity =>
@@ -165,6 +161,11 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .HasColumnName("user_name");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_detail_order_id_fkey");
         });
 
         modelBuilder.Entity<OrderPayment>(entity =>
@@ -194,6 +195,11 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.PaymentStatusId).HasColumnName("payment_status_id");
             entity.Property(e => e.TotalPayment).HasColumnName("total_payment");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderPayments)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_payment_order_id_fkey");
         });
 
         modelBuilder.Entity<Position>(entity =>
