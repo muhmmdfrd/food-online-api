@@ -98,17 +98,19 @@ public class OrderDetailHelper
             {
                 payment.TotalPayment = value.PaymentAmount;
                 payment.GrandTotal += orderDetailDtos.Sum(q => q.Total);
+                payment.Cashback = payment.GrandTotal - payment.TotalPayment;
                 affected = await _orderPaymentService.UpdateGrandTotalAsync(payment);
             }
             else
             {
+                var total = orderDetailDtos.Sum(q => q.Total);
                 affected = await _orderPaymentService.CreateAsync(new OrderPaymentAddDto
                 {
                     OrderId = order.Id,
                     UserId = currentUser.Id,
-                    GrandTotal = orderDetailDtos.Sum(q => q.Total), 
+                    GrandTotal = total,
                     TotalPayment = value.PaymentAmount,
-                    Cashback = 0,
+                    Cashback = total - value.PaymentAmount,
                     CreatedBy = currentUser.Id,
                     CreatedAt = now,
                     ModifiedBy = currentUser.Id,
