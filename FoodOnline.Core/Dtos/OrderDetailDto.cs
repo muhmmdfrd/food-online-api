@@ -53,6 +53,7 @@ public class OrderDetailFilter : TableFilter
 
 public class OrderDetailAddRequestDto
 {
+    public required int PaymentAmount { get; set; }
     public List<OrderDetailAddChildDto> Details { get; set; } = null!;
 }
 
