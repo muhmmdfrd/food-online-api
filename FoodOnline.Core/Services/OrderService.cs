@@ -130,21 +130,23 @@ public class OrderService : IOrderService
                 Qty = d.Qty,
             }).ToList();
 
-        var payments = (
+        var payment = (
             from p in entities.OrderPayments
             where p.OrderId == orderId && p.UserId == userId
             select new OrderViewDetailPaymentHistory
             {
                 Cashback = p.Cashback,
                 TotalPayment = p.TotalPayment
-            }).ToList();
+            }).FirstOrDefault();
 
         return new OrderViewDetailHistory
         {
             Code = entities.Code,
             Date = entities.Date,
+            Total = details.Sum(q => q.Total),
+            StatusName = ((OrderStatusEnum)entities.StatusId).ToString(),
             OrderDetails = details,
-            OrderPayments = payments
+            OrderPayment = payment
         };
     }
 }

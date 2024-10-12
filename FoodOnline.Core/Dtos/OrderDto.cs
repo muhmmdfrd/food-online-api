@@ -29,8 +29,10 @@ public class OrderViewDetailHistory
 {
     public string Code { get; set; } = null!;
     public DateTime Date { get; set; }
+    public int Total { get; set; }
+    public string StatusName { get; set; } = null!;
     public List<OrderViewDetailItemHistory> OrderDetails { get; set; } = [];
-    public List<OrderViewDetailPaymentHistory> OrderPayments { get; set; } = [];
+    public OrderViewDetailPaymentHistory? OrderPayment { get; set; }
 }
 
 public class OrderViewDetailItemHistory
