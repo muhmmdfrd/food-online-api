@@ -41,6 +41,19 @@ public class OrdersController : FlozaApiController
         return ApiOK(result);
     }
     
+    [HttpGet("user/{userId:long}/detail/{orderId:long}")]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderViewDetailHistory>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public IActionResult GetMyOrderDetail([FromRoute] long userId, long orderId)
+    {
+        var result = _helper.GetOrderViewDetailHistory(userId, orderId);
+        if (result == null)
+        {
+            return ApiDataInvalid("Order not found");
+        }
+        return ApiOK(result);
+    }
+    
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]

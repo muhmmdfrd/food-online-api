@@ -9,4 +9,5 @@ public interface IOrderService : IFlozaPagination<OrderViewDto, OrderAddDto, Ord
     public OrderViewDto? GetActiveOrderByCode(string code);
     public long? GetOrderActiveId();
     public List<OrderViewHistory> GetMyOrder(long userId);
+    public OrderViewDetailHistory? GetOrderViewDetailHistory(long userId, long orderId);
 }

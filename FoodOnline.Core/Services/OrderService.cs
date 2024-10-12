@@ -97,10 +97,54 @@ public class OrderService : IOrderService
 
     public List<OrderViewHistory> GetMyOrder(long userId)
     {
-        return  _repo.AsQueryable.AsNoTracking()
-            .Where(q => q.OrderDetails.Any(o => o.UserId == userId))
-            .ProjectTo<OrderViewHistory>(_mapper.ConfigurationProvider)
+        var entities = _repo.AsQueryable.AsNoTracking()
+            .Include(q => q.OrderDetails)
+            .Where(q => q.OrderDetails.Any(x => x.UserId == userId))
             .OrderByDescending(q => q.Id)
             .ToList();
+
+        return _mapper.Map<List<OrderViewHistory>>(entities, opt => opt.Items["UserId"] = userId);
+    }
+
+    public OrderViewDetailHistory? GetOrderViewDetailHistory(long userId, long orderId)
+    {
+        var entities = _repo.AsQueryable.AsNoTracking()
+            .Include(q => q.OrderDetails)
+            .Include(q => q.OrderPayments)
+            .AsSplitQuery()
+            .FirstOrDefault(q => q.Id == orderId);
+        
+        if (entities == null)
+        {
+            return null;
+        }
+        
+        var details = (
+            from d in entities.OrderDetails
+            where d.OrderId == orderId && d.UserId == userId
+            select new OrderViewDetailItemHistory
+            {
+                Name = d.MenuName,
+                Total = d.Total,
+                Price = d.Price,
+                Qty = d.Qty,
+            }).ToList();
+
+        var payments = (
+            from p in entities.OrderPayments
+            where p.OrderId == orderId && p.UserId == userId
+            select new OrderViewDetailPaymentHistory
+            {
+                Cashback = p.Cashback,
+                TotalPayment = p.TotalPayment
+            }).ToList();
+
+        return new OrderViewDetailHistory
+        {
+            Code = entities.Code,
+            Date = entities.Date,
+            OrderDetails = details,
+            OrderPayments = payments
+        };
     }
 }

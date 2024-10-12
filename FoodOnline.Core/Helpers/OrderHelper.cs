@@ -26,6 +26,11 @@ public class OrderHelper
         return _service.GetMyOrder(userId);
     }
 
+    public OrderViewDetailHistory? GetOrderViewDetailHistory(long userId, long orderId)
+    {
+        return _service.GetOrderViewDetailHistory(userId, orderId);
+    }
+
     public async Task<int> CreateAsync(OrderAddDto value, CurrentUser currentUser)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
