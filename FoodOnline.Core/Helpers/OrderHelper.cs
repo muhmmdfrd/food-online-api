@@ -21,7 +21,7 @@ public class OrderHelper
         return _service.GetPagedAsync(filter);
     }
 
-    public List<OrderViewDto> GetMyOrder(long userId)
+    public List<OrderViewHistory> GetMyOrder(long userId)
     {
         return _service.GetMyOrder(userId);
     }

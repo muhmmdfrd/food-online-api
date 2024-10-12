@@ -18,6 +18,12 @@ public class OrderViewDto : OrderDto
     public string StatusName { get; set; } = null!;
 }
 
+public class OrderViewHistory : OrderViewDto
+{
+    public int Total { get; set; }
+    public List<string> Menus { get; set; } = [];
+}
+
 public class OrderAddDto : OrderDto
 {
     [JsonIgnore]

@@ -82,11 +82,18 @@ public class FlozaApiController : ControllerBase
     {
         if (orderResponseEnum == OrderResponseEnum.FailedToOrder)
         {
-            var response = new ApiResponse<object?>().Fail(orderResponseEnum.GetDisplayName(), ResponseConstant.FAILED_CODE);
+            var response = new ApiResponse<object?>().Fail("Order failed to create.", ResponseConstant.FAILED_CODE);
             return StatusCode((int)HttpStatusCode.InternalServerError, response);
         }
-        
-        var badRequestResponse = new ApiResponse<object?>().Fail(orderResponseEnum.GetDisplayName(), ResponseConstant.BAD_REQUEST_CODE);
+
+        var message = orderResponseEnum switch
+        {
+            OrderResponseEnum.MenuNotFound => "Selected menu not found",
+            OrderResponseEnum.NotOpen => "Order is not open by administrator.",
+            _ => "Bad request."
+        };
+
+        var badRequestResponse = new ApiResponse<object?>().Fail(message, ResponseConstant.BAD_REQUEST_CODE);
         return StatusCode((int)HttpStatusCode.BadRequest, badRequestResponse);
     }
 

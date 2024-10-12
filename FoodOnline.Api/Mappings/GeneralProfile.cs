@@ -34,6 +34,9 @@ public class GeneralProfile : Profile
         CreateMap<Order, OrderViewDto>()
             .ForMember(d => d.StatusName, conf => conf.MapFrom(e => ((OrderStatusEnum)e.StatusId).ToString()))
             .ReverseMap();
+        CreateMap<Order, OrderViewHistory>()
+            .ForMember(d => d.Menus, conf => conf.MapFrom(q => q.OrderDetails.Select(o => o.MenuName).ToList()))
+            .ForMember(d => d.Total, conf => conf.MapFrom(q => q.OrderDetails.Sum(o => o.Total)));
         CreateMap<OrderAddDto, Order>();
         CreateMap<OrderUpdDto, Order>();
 

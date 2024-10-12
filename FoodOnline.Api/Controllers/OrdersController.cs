@@ -33,7 +33,7 @@ public class OrdersController : FlozaApiController
     }
     
     [HttpGet("user/{userId:long}")]
-    [ProducesResponseType(typeof(ApiResponse<List<OrderViewDto>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderViewHistory>>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
     public IActionResult GetMyOrder([FromRoute] long userId)
     {
