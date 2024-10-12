@@ -279,6 +279,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.DataStatusId)
                 .HasDefaultValue(1)
                 .HasColumnName("data_status_id");
+            entity.Property(e => e.Email)
+                .HasMaxLength(75)
+                .HasColumnName("email");
             entity.Property(e => e.ModifiedAt)
                 .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
                 .HasColumnType("timestamp without time zone")
@@ -292,6 +295,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .HasColumnName("password");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(20)
+                .HasColumnName("phone_number");
             entity.Property(e => e.PositionId).HasColumnName("position_id");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.Username)
