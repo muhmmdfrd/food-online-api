@@ -35,12 +35,13 @@ public class OrderDetailsController : FlozaApiController
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
     public async Task<IActionResult> Create([FromBody] OrderDetailAddRequestDto dto)
     {
-        var affected = await _helper.CreateAsync(dto, CurrentUser);
-        if (affected <= 0)
-        {
-            return ApiDataInvalid("Order detail not created.");
-        }
+        var result = await _helper.CreateAsync(dto, CurrentUser);
 
+        if (result != OrderResponseEnum.Success)
+        {
+            return ApiOrderFailed(result);
+        }
+        
         return ApiCreated();
     }
     

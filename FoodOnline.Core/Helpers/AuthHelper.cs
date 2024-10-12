@@ -27,12 +27,14 @@ public class AuthHelper
 
     public async Task<AuthResponseDto?> AuthAsync(AuthRequestDto request)
     {
-        var user = await _service.AuthAsync(request);
-        if (user == null)
+        var entity = await _service.AuthAsync(request);
+        if (entity == null)
         {
             return null;
         }
 
+        var user = await _userService.FindAsync(entity.Id);
+            
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
             var existingSession = await _userSessionHelper.GetLastSessionAsync(user.Id);

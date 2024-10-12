@@ -44,7 +44,7 @@ public class OrderDetailHelper
         return await _service.GetOrderDetailByOrderIdAsync(activeOrderId ?? 0, currentUser.Id);
     }
 
-    public async Task<int> CreateAsync(OrderDetailAddRequestDto value, CurrentUser currentUser)
+    public async Task<OrderResponseEnum> CreateAsync(OrderDetailAddRequestDto value, CurrentUser currentUser)
     {
         var now = DateTime.UtcNow;
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -53,7 +53,7 @@ public class OrderDetailHelper
             var order = _orderService.GetActiveOrderByCode(code);
             if (order == null)
             {
-                return 0;
+                return OrderResponseEnum.NotOpen;
             }
     
             var menus = await _menuService.GetListAsync();
@@ -64,7 +64,7 @@ public class OrderDetailHelper
                 var menu = menus.FirstOrDefault(q => q.Id == item.MenuId);
                 if (menu == null)
                 {
-                    return 0;
+                    return OrderResponseEnum.MenuNotFound;
                 }
                 
                 now = DateTime.UtcNow;
@@ -90,7 +90,7 @@ public class OrderDetailHelper
             var affected = await _service.CreateMultipleAsync(orderDetailDtos);
             if (affected <= 0)
             {
-                return 0;
+                return OrderResponseEnum.FailedToOrder;
             }
 
             var payment = _orderPaymentService.IsPaymentExist(order.Id, currentUser.Id);
@@ -120,7 +120,7 @@ public class OrderDetailHelper
             
             transaction.Complete();
             
-            return affected;
+            return affected <= 0 ? OrderResponseEnum.FailedToOrder : OrderResponseEnum.Success;
         }
     }
 

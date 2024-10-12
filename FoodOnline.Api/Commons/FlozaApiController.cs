@@ -1,8 +1,10 @@
 ﻿using System.Net;
 using FoodOnline.Api.Constants;
 using FoodOnline.Api.Models;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.OpenApi.Extensions;
 
 namespace FoodOnline.Api.Commons;
 
@@ -73,6 +75,19 @@ public class FlozaApiController : ControllerBase
     {
         var response = new ApiResponse<object?>().Forbidden();
         return StatusCode((int)HttpStatusCode.Forbidden, response);
+    }
+
+    [NonAction]
+    protected ObjectResult ApiOrderFailed(OrderResponseEnum orderResponseEnum)
+    {
+        if (orderResponseEnum == OrderResponseEnum.FailedToOrder)
+        {
+            var response = new ApiResponse<object?>().Fail(orderResponseEnum.GetDisplayName(), ResponseConstant.FAILED_CODE);
+            return StatusCode((int)HttpStatusCode.InternalServerError, response);
+        }
+        
+        var badRequestResponse = new ApiResponse<object?>().Fail(orderResponseEnum.GetDisplayName(), ResponseConstant.BAD_REQUEST_CODE);
+        return StatusCode((int)HttpStatusCode.BadRequest, badRequestResponse);
     }
 
     protected string GetBaseUrl()
