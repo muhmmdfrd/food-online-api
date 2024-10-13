@@ -1,8 +1,10 @@
-﻿using Flozacode.Models.Paginations;
+﻿using FirebaseAdmin.Messaging;
+using Flozacode.Models.Paginations;
 using FoodOnline.Api.Commons;
 using FoodOnline.Api.Models;
 using FoodOnline.Core.Dtos;
 using FoodOnline.Core.Enums;
+using FoodOnline.Core.Fcm;
 using FoodOnline.Core.Helpers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -15,10 +17,12 @@ namespace FoodOnline.Api.Controllers;
 public class OrdersController : FlozaApiController
 {
     private readonly OrderHelper _helper;
+    private readonly FirebaseHelper _firebaseHelper;
 
-    public OrdersController(OrderHelper helper)
+    public OrdersController(OrderHelper helper, FirebaseHelper firebaseHelper)
     {
         _helper = helper;
+        _firebaseHelper = firebaseHelper;
     }
 
     [HttpGet]
@@ -58,9 +62,17 @@ public class OrdersController : FlozaApiController
         return ApiCreated();
     }
 
-    [HttpPost("firebase")]
-    public IActionResult SendFirebase()
+    [HttpGet("firebase/{token}")]
+    [AllowAnonymous]
+    public IActionResult SendFirebase([FromRoute] string token)
     {
+        var notification = new Notification
+        {
+            Body = "Ini contoh aja.",
+            Title = "Contoh"
+        };
+        
+        _firebaseHelper.SendMessageAsync(notification, token);
         return ApiOK();
     }
 }
