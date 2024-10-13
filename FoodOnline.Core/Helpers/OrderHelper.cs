@@ -21,6 +21,16 @@ public class OrderHelper
         return _service.GetPagedAsync(filter);
     }
 
+    public List<OrderViewHistory> GetMyOrder(long userId)
+    {
+        return _service.GetMyOrder(userId);
+    }
+
+    public OrderViewDetailHistory? GetOrderViewDetailHistory(long userId, long orderId)
+    {
+        return _service.GetOrderViewDetailHistory(userId, orderId);
+    }
+
     public async Task<int> CreateAsync(OrderAddDto value, CurrentUser currentUser)
     {
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
@@ -43,11 +53,5 @@ public class OrderHelper
             
             return result;
         }
-    }
-
-    public string GenerateCode()
-    {
-        var now = DateTime.UtcNow;
-        return now.ToString("yyyyMMdd");
     }
 }

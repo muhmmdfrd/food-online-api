@@ -14,12 +14,14 @@ namespace FoodOnline.Core.Services;
 public class OrderDetailService : IOrderDetailService
 {
     private readonly IFlozaRepo<OrderDetail, AppDbContext> _repo;
+    private readonly IFlozaRepo<User, AppDbContext> _userRepo;
     private readonly IMapper _mapper;
 
-    public OrderDetailService(IFlozaRepo<OrderDetail, AppDbContext> repo, IMapper mapper)
+    public OrderDetailService(IFlozaRepo<OrderDetail, AppDbContext> repo, IMapper mapper, IFlozaRepo<User, AppDbContext> userRepo)
     {
         _repo = repo;
         _mapper = mapper;
+        _userRepo = userRepo;
     }
 
     public async Task<Pagination<OrderDetailViewDto>> GetPagedAsync(OrderDetailFilter filter)
@@ -87,5 +89,27 @@ public class OrderDetailService : IOrderDetailService
     {
         var entities = _mapper.Map<List<OrderDetail>>(values);
         return _repo.AddMultipleAsync(entities);
+    }
+
+    public Task<List<OrderDetailGroupByUser>> GetOrderDetailByOrderIdAsync(long orderId, long currentUserId)
+    {
+        var result =
+            from detail in _repo.AsQueryable.AsNoTracking()
+                .Where(q => q.OrderId == orderId && q.UserId != currentUserId)
+            group detail by new { detail.UserId }
+            into grp
+            select new OrderDetailGroupByUser
+            {
+                Name = grp.FirstOrDefault(q => q.UserId == grp.Key.UserId).UserName,
+                Details = grp.Select(q => new OrderDetailGroupByUserItem()
+                {
+                    Price = q.Price,
+                    MenuName = q.MenuName,
+                    Qty = q.Qty
+                }).ToList(),
+                Total = grp.Sum(q => q.Total)
+            };
+        
+        return Task.FromResult(result.ToList());
     }
 }

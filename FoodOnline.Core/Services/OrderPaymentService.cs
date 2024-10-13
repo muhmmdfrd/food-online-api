@@ -38,7 +38,8 @@ public class OrderPaymentService : IOrderPaymentService
 
     public Task<int> CreateAsync(OrderPaymentAddDto value)
     {
-        throw new NotImplementedException();
+        var entity = _mapper.Map<OrderPayment>(value);
+        return _repo.AddAsync(entity);
     }
 
     public Task<int> UpdateAsync(OrderPaymentUpdDto value)

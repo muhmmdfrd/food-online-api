@@ -8,10 +8,6 @@ namespace FoodOnline.Repository.Contexts;
 
 public partial class AppDbContext : Dbs
 {
-    public AppDbContext()
-    {
-    }
-
     public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
     {
     }
@@ -33,7 +29,7 @@ public partial class AppDbContext : Dbs
     public virtual DbSet<User> Users { get; set; }
 
     public virtual DbSet<UserSession> UserSessions { get; set; }
-    
+
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder.Entity<Menu>(entity =>
@@ -165,6 +161,11 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.UserName)
                 .HasMaxLength(100)
                 .HasColumnName("user_name");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderDetails)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_detail_order_id_fkey");
         });
 
         modelBuilder.Entity<OrderPayment>(entity =>
@@ -194,6 +195,11 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.PaymentStatusId).HasColumnName("payment_status_id");
             entity.Property(e => e.TotalPayment).HasColumnName("total_payment");
             entity.Property(e => e.UserId).HasColumnName("user_id");
+
+            entity.HasOne(d => d.Order).WithMany(p => p.OrderPayments)
+                .HasForeignKey(d => d.OrderId)
+                .OnDelete(DeleteBehavior.ClientSetNull)
+                .HasConstraintName("order_payment_order_id_fkey");
         });
 
         modelBuilder.Entity<Position>(entity =>
@@ -273,6 +279,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.DataStatusId)
                 .HasDefaultValue(1)
                 .HasColumnName("data_status_id");
+            entity.Property(e => e.Email)
+                .HasMaxLength(75)
+                .HasColumnName("email");
             entity.Property(e => e.ModifiedAt)
                 .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
                 .HasColumnType("timestamp without time zone")
@@ -286,6 +295,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.Password)
                 .HasMaxLength(100)
                 .HasColumnName("password");
+            entity.Property(e => e.PhoneNumber)
+                .HasMaxLength(20)
+                .HasColumnName("phone_number");
             entity.Property(e => e.PositionId).HasColumnName("position_id");
             entity.Property(e => e.RoleId).HasColumnName("role_id");
             entity.Property(e => e.Username)

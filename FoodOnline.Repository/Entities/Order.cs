@@ -20,4 +20,8 @@ public partial class Order
     public long? ModifiedBy { get; set; }
 
     public DateTime? ModifiedAt { get; set; }
+
+    public virtual ICollection<OrderDetail> OrderDetails { get; set; } = new List<OrderDetail>();
+
+    public virtual ICollection<OrderPayment> OrderPayments { get; set; } = new List<OrderPayment>();
 }

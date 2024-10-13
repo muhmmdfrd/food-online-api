@@ -4,7 +4,9 @@ using Flozacode.Extensions.SortExtension;
 using Flozacode.Models.Paginations;
 using Flozacode.Repository;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
+using FoodOnline.Core.Utils;
 using FoodOnline.Repository.Contexts;
 using FoodOnline.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -78,6 +80,75 @@ public class OrderService : IOrderService
 
     public bool CheckOrderActiveByCode(string code)
     {
-        return _repo.AsQueryable.AsNoTracking().Any(q => q.Code == code);
+        return _repo.AsQueryable.AsNoTracking().Any(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
+    }
+
+    public OrderViewDto? GetActiveOrderByCode(string code)
+    {
+        return _repo.AsQueryable
+            .AsNoTracking()
+            .ProjectTo<OrderViewDto>(_mapper.ConfigurationProvider)
+            .FirstOrDefault(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
+    }
+
+    public long? GetOrderActiveId()
+    {
+        var code = OrderUtils.GenerateCode();
+        return _repo.AsQueryable.AsNoTracking().LastOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active && q.Code == code)?.Id;
+    }
+
+    public List<OrderViewHistory> GetMyOrder(long userId)
+    {
+        var entities = _repo.AsQueryable.AsNoTracking()
+            .Include(q => q.OrderDetails)
+            .Where(q => q.OrderDetails.Any(x => x.UserId == userId))
+            .OrderByDescending(q => q.Id)
+            .ToList();
+
+        return _mapper.Map<List<OrderViewHistory>>(entities, opt => opt.Items["UserId"] = userId);
+    }
+
+    public OrderViewDetailHistory? GetOrderViewDetailHistory(long userId, long orderId)
+    {
+        var entities = _repo.AsQueryable.AsNoTracking()
+            .Include(q => q.OrderDetails)
+            .Include(q => q.OrderPayments)
+            .AsSplitQuery()
+            .FirstOrDefault(q => q.Id == orderId);
+        
+        if (entities == null)
+        {
+            return null;
+        }
+        
+        var details = (
+            from d in entities.OrderDetails
+            where d.OrderId == orderId && d.UserId == userId
+            select new OrderViewDetailItemHistory
+            {
+                Name = d.MenuName,
+                Total = d.Total,
+                Price = d.Price,
+                Qty = d.Qty,
+            }).ToList();
+
+        var payment = (
+            from p in entities.OrderPayments
+            where p.OrderId == orderId && p.UserId == userId
+            select new OrderViewDetailPaymentHistory
+            {
+                Cashback = p.Cashback,
+                TotalPayment = p.TotalPayment
+            }).FirstOrDefault();
+
+        return new OrderViewDetailHistory
+        {
+            Code = entities.Code,
+            Date = entities.Date,
+            Total = details.Sum(q => q.Total),
+            StatusName = ((OrderStatusEnum)entities.StatusId).ToString(),
+            OrderDetails = details,
+            OrderPayment = payment
+        };
     }
 }

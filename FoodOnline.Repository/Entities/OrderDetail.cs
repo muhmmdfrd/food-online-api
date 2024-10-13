@@ -30,4 +30,6 @@ public partial class OrderDetail
     public long? ModifiedBy { get; set; }
 
     public DateTime? ModifiedAt { get; set; }
+
+    public virtual Order Order { get; set; } = null!;
 }

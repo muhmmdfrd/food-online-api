@@ -21,7 +21,7 @@ public class AuthService : IAuthService
         _mapper = mapper;
     }
     
-    public async Task<UserViewDto?> AuthAsync(AuthRequestDto request)
+    public async Task<User?> AuthAsync(AuthRequestDto request)
     {
         var user = _repo.AsQueryable
             .AsNoTracking()
@@ -38,7 +38,7 @@ public class AuthService : IAuthService
         {
             return null;
         }
-        
-        return _mapper.Map<UserViewDto>(user);
+
+        return user;
     }
 }

@@ -6,6 +6,7 @@ using FoodOnline.Core.Dtos;
 using FoodOnline.Core.Enums;
 using FoodOnline.Core.Fcm;
 using FoodOnline.Core.Helpers;
+using FoodOnline.Core.Utils;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
@@ -35,6 +36,28 @@ public class OrdersController : FlozaApiController
         return ApiOK(result);
     }
     
+    [HttpGet("user/{userId:long}")]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderViewHistory>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public IActionResult GetMyOrder([FromRoute] long userId)
+    {
+        var result = _helper.GetMyOrder(userId);
+        return ApiOK(result);
+    }
+    
+    [HttpGet("user/{userId:long}/detail/{orderId:long}")]
+    [ProducesResponseType(typeof(ApiResponse<List<OrderViewDetailHistory>>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public IActionResult GetMyOrderDetail([FromRoute] long userId, long orderId)
+    {
+        var result = _helper.GetOrderViewDetailHistory(userId, orderId);
+        if (result == null)
+        {
+            return ApiDataInvalid("Order not found");
+        }
+        return ApiOK(result);
+    }
+    
     [HttpPost]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
@@ -43,7 +66,7 @@ public class OrdersController : FlozaApiController
     {
         var dto = new OrderAddDto
         {
-            Code = _helper.GenerateCode(),
+            Code = OrderUtils.GenerateCode(),
             Date = DateTime.UtcNow,
             StatusId = (int)OrderStatusEnum.Active,
         };
