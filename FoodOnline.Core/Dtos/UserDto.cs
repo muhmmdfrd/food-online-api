@@ -55,3 +55,8 @@ public class UserUpdDto : UserDto
 public class UserFilter : TableFilter
 {
 }
+
+public class UserUpdTokenRequest
+{
+    public string Token { get; set; } = null!;
+}

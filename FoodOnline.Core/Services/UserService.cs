@@ -121,4 +121,19 @@ public class UserService : IUserService
 
         return _repo.UpdateAsync(entity);
     }
+
+    public Task<int> UpdateFirebaseTokenAsync(long id, string token)
+    {
+        var user = _repo.AsQueryable.FirstOrDefault(q => q.Id == id && q.DataStatusId == (int)DataStatusEnum.Active);
+        if (user == null)
+        {
+            return Task.FromResult(0);
+        }
+
+        user.FirebaseToken = token;
+        user.ModifiedBy = id;
+        user.ModifiedAt = DateTime.UtcNow;
+        
+        return _repo.UpdateAsync(user);
+    }
 }

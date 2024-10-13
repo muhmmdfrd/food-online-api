@@ -85,9 +85,9 @@ public class OrdersController : FlozaApiController
         return ApiCreated();
     }
 
-    [HttpGet("firebase/{token}")]
+    [HttpPost("firebase")]
     [AllowAnonymous]
-    public async Task<IActionResult> SendFirebase([FromRoute] string token)
+    public async Task<IActionResult> SendFirebase([FromBody] UserUpdTokenRequest request)
     {
         try
         {
@@ -97,7 +97,7 @@ public class OrdersController : FlozaApiController
                 Title = "Contoh"
             };
         
-            var result = await _firebaseHelper.SendMessageAsync(notification, token);
+            var result = await _firebaseHelper.SendMessageAsync(notification, request.Token);
             return ApiOK();
         }
         catch (Exception e)

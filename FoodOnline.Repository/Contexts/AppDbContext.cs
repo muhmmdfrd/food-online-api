@@ -8,7 +8,8 @@ namespace FoodOnline.Repository.Contexts;
 
 public partial class AppDbContext : Dbs
 {
-    public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
+    public AppDbContext(DbContextOptions<AppDbContext> options)
+        : base(options)
     {
     }
 
@@ -282,6 +283,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.Email)
                 .HasMaxLength(75)
                 .HasColumnName("email");
+            entity.Property(e => e.FirebaseToken)
+                .HasMaxLength(250)
+                .HasColumnName("firebase_token");
             entity.Property(e => e.ModifiedAt)
                 .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")
                 .HasColumnType("timestamp without time zone")
@@ -319,6 +323,8 @@ public partial class AppDbContext : Dbs
             entity.HasKey(e => e.Id).HasName("user_session_pkey");
 
             entity.ToTable("user_session");
+
+            entity.HasIndex(e => e.Code, "user_session_code_idx");
 
             entity.Property(e => e.Id).HasColumnName("id");
             entity.Property(e => e.Code)

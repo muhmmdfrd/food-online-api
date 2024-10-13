@@ -7,4 +7,5 @@ namespace FoodOnline.Core.Interfaces;
 public interface IUserService : IFlozaPagination<UserViewDto, UserAddDto, UserUpdDto, UserFilter>
 {
     Task<int> DeleteAsync(long id, CurrentUser currentUser, bool isHardDelete = false);
+    Task<int> UpdateFirebaseTokenAsync(long id, string token);
 }

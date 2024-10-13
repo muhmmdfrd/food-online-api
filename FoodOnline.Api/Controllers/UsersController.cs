@@ -80,6 +80,21 @@ public class UsersController : FlozaApiController
         return ApiOK("User updated.");
     }
     
+    [HttpPut("firebase-token")]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdateFirebaseToken([FromBody] UserUpdTokenRequest dto)
+    {
+        var affected = await _helper.UpdateFirebaseTokenAsync(CurrentUser.Id, dto.Token);
+        if (affected <= 0)
+        {
+            return ApiDataInvalid("Token not updated.");
+        }
+
+        return ApiOK("Token updated.");
+    }
+    
     [HttpDelete("{id:long}")]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status200OK)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]

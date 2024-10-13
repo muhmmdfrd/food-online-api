@@ -56,6 +56,11 @@ public class UserHelper
 
         return _service.UpdateAsync(value);
     }
+    
+    public Task<int> UpdateFirebaseTokenAsync(long id, string token)
+    {
+        return _service.UpdateFirebaseTokenAsync(id, token);
+    }
 
     public Task<int> DeleteAsync(long id, CurrentUser currentUser, bool isHardDelete)
     {
