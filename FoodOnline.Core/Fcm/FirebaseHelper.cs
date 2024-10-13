@@ -13,4 +13,14 @@ public class FirebaseHelper
         };
         return FirebaseMessaging.DefaultInstance.SendAsync(message);
     }
+
+    public Task SendBroadcastAsync(Notification notification, List<string> tokens)
+    {
+        foreach (var token in tokens)
+        {
+            SendMessageAsync(notification, token);
+            Thread.Sleep(500);
+        }
+        return Task.CompletedTask;
+    }
 }
