@@ -3,12 +3,14 @@ using System.Net.Mime;
 using System.Reflection;
 using System.Text;
 using Asp.Versioning;
+using FirebaseAdmin;
 using FoodOnline.Api.Commons;
 using FoodOnline.Api.Constants;
 using FoodOnline.Api.Models;
 using FoodOnline.Core.Helpers;
 using FoodOnline.Core.Services.RedisCaching;
 using FoodOnline.Core.Settings;
+using Google.Apis.Auth.OAuth2;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.ResponseCompression;
@@ -221,11 +223,25 @@ public static class ServiceExtension
     {
         services.Configure<JwtConfigs>(configuration.GetSection(nameof(JwtConfigs)));
         services.Configure<RedisConfigs>(configuration.GetSection(nameof(RedisConfigs)));
+        services.Configure<FirebaseConfigs>(configuration.GetSection(nameof(FirebaseConfigs)));
     }
 
     public static void RegisterRedis(this IServiceCollection services, IConfiguration configuration)
     {
         var connectionString = configuration.GetSection("RedisConfigs:ConnectionString").Value;
         services.AddSingleton(new RedisService(connectionString!));
+    }
+
+    public static void RegisterFirebase(this IServiceCollection services, IConfiguration configuration, string webRootPath)
+    {
+        var projectId = configuration.GetSection("FirebaseConfigs:ProjectId").Value;
+        var credentialFile = configuration.GetSection("FirebaseConfigs:CredentialFile").Value ?? "";
+        var htmlFilePath = Path.Combine(webRootPath, "json", credentialFile);
+        
+        FirebaseApp.Create(new AppOptions
+        {
+            Credential = GoogleCredential.FromFile(htmlFilePath),
+            ProjectId = projectId,
+        });
     }
 }

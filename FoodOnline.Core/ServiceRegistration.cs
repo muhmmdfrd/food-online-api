@@ -1,4 +1,5 @@
-﻿using FoodOnline.Core.Helpers;
+﻿using FoodOnline.Core.Fcm;
+using FoodOnline.Core.Helpers;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Core.Services;
 using FoodOnline.Repository.Contexts;
@@ -36,6 +37,8 @@ public static class ServiceRegistration
         services.AddScoped<OrderPaymentHelper>();
         services.AddScoped<MenuHelper>();
         services.AddScoped<MerchantHelper>();
+        
+        services.AddScoped<FirebaseHelper>();
     }
     
     public static void AddDbContext(this IServiceCollection services, IConfiguration config)
