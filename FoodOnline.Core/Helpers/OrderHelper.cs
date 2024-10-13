@@ -68,7 +68,7 @@ public class OrderHelper
             var result = await _service.CreateAsync(value);
             transaction.Complete();
 
-            Task.Run(() =>
+            await Task.Run(() =>
             {
                 var tokens = _userRepo.AsQueryable
                     .AsNoTracking()

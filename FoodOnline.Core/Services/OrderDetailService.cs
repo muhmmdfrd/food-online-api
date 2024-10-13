@@ -93,9 +93,14 @@ public class OrderDetailService : IOrderDetailService
 
     public Task<List<OrderDetailGroupByUser>> GetOrderDetailByOrderIdAsync(long orderId, long currentUserId)
     {
+        var baseQuery = _repo.AsQueryable.AsNoTracking().Where(q => q.OrderId == orderId);
+        if (!baseQuery.Any())
+        {
+            return Task.FromResult(new List<OrderDetailGroupByUser>());
+        }
+        
         var result =
-            from detail in _repo.AsQueryable.AsNoTracking()
-                .Where(q => q.OrderId == orderId && q.UserId != currentUserId)
+            from detail in baseQuery
             group detail by new { detail.UserId }
             into grp
             select new OrderDetailGroupByUser
