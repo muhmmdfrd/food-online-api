@@ -6,6 +6,7 @@ using Flozacode.Repository;
 using FoodOnline.Core.Dtos;
 using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
+using FoodOnline.Core.Utils;
 using FoodOnline.Repository.Contexts;
 using FoodOnline.Repository.Entities;
 using Microsoft.EntityFrameworkCore;
@@ -92,7 +93,8 @@ public class OrderService : IOrderService
 
     public long? GetOrderActiveId()
     {
-        return _repo.AsQueryable.AsNoTracking().FirstOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active)?.Id;
+        var code = OrderUtils.GenerateCode();
+        return _repo.AsQueryable.AsNoTracking().LastOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active && q.Code == code)?.Id;
     }
 
     public List<OrderViewHistory> GetMyOrder(long userId)
