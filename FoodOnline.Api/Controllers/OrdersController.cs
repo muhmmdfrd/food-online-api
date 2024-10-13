@@ -87,15 +87,24 @@ public class OrdersController : FlozaApiController
 
     [HttpGet("firebase/{token}")]
     [AllowAnonymous]
-    public IActionResult SendFirebase([FromRoute] string token)
+    public async Task<IActionResult> SendFirebase([FromRoute] string token)
     {
-        var notification = new Notification
+        try
         {
-            Body = "Ini contoh aja.",
-            Title = "Contoh"
-        };
+            var notification = new Notification
+            {
+                Body = "Ini contoh aja.",
+                Title = "Contoh"
+            };
         
-        _firebaseHelper.SendMessageAsync(notification, token);
-        return ApiOK();
+            var result = await _firebaseHelper.SendMessageAsync(notification, token);
+            return ApiOK();
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ApiDataInvalid(e.Message);
+        }
+       
     }
 }
