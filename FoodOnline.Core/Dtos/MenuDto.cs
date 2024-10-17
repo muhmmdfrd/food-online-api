@@ -14,6 +14,7 @@ public class MenuDto
 
     public long MerchantId { get; set; }
     public string? Description { get; set; }
+    public string? Code { get; set; }
     public long? CreatedBy { get; set; }
 
     public DateTime? CreatedAt { get; set; }
@@ -27,6 +28,7 @@ public class MenuViewDto : MenuDto
 {
     public string DataStatusName { get; set; } = null!;
     public string MerchantName { get; set; } = null!;
+    public string? Picture { get; set; }
 }
 
 public class MenuAddDto : MenuDto{}

@@ -25,5 +25,7 @@ public partial class Menu
 
     public string? Description { get; set; }
 
+    public string? Code { get; set; }
+
     public virtual Merchant Merchant { get; set; } = null!;
 }
