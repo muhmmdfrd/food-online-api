@@ -23,5 +23,7 @@ public partial class Menu
 
     public DateTime? ModifiedAt { get; set; }
 
+    public string? Description { get; set; }
+
     public virtual Merchant Merchant { get; set; } = null!;
 }

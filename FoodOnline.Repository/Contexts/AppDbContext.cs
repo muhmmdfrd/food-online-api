@@ -50,6 +50,9 @@ public partial class AppDbContext : Dbs
             entity.Property(e => e.DataStatusId)
                 .HasDefaultValue(1)
                 .HasColumnName("data_status_id");
+            entity.Property(e => e.Description)
+                .HasMaxLength(200)
+                .HasColumnName("description");
             entity.Property(e => e.MerchantId).HasColumnName("merchant_id");
             entity.Property(e => e.ModifiedAt)
                 .HasDefaultValueSql("(now() AT TIME ZONE 'utc'::text)")

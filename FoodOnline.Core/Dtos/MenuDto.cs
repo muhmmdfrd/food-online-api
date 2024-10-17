@@ -13,7 +13,7 @@ public class MenuDto
     public int Price { get; set; }
 
     public long MerchantId { get; set; }
-
+    public string? Description { get; set; }
     public long? CreatedBy { get; set; }
 
     public DateTime? CreatedAt { get; set; }
