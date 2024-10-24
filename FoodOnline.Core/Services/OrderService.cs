@@ -94,7 +94,9 @@ public class OrderService : IOrderService
     public long? GetOrderActiveId()
     {
         var code = OrderUtils.GenerateCode();
-        return _repo.AsQueryable.AsNoTracking().LastOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active && q.Code == code)?.Id;
+        return _repo.AsQueryable.AsNoTracking()
+            .OrderBy(q => q.Date)
+            .LastOrDefault(q => q.StatusId == (int)OrderStatusEnum.Active && q.Code == code)?.Id;
     }
 
     public List<OrderViewHistory> GetMyOrder(long userId)
