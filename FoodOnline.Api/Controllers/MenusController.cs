@@ -44,7 +44,7 @@ public class MenusController : FlozaApiController
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status201Created)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
     [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
-    public async Task<IActionResult> Create([FromBody] MenuAddDto dto)
+    public async Task<IActionResult> Create([FromForm] MenuAddDto dto)
     {
         var affected = await _helper.CreateAsync(dto, CurrentUser);
         if (affected <= 0)

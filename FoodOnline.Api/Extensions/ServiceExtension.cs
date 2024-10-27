@@ -224,6 +224,7 @@ public static class ServiceExtension
         services.Configure<JwtConfigs>(configuration.GetSection(nameof(JwtConfigs)));
         services.Configure<RedisConfigs>(configuration.GetSection(nameof(RedisConfigs)));
         services.Configure<FirebaseConfigs>(configuration.GetSection(nameof(FirebaseConfigs)));
+        services.Configure<RabbitMqConfigs>(configuration.GetSection(nameof(RabbitMqConfigs)));
     }
 
     public static void RegisterRedis(this IServiceCollection services, IConfiguration configuration)

@@ -80,6 +80,14 @@ public class MenuService : IMenuService
         return menu;
     }
 
+    public async Task<long> CreateAndGetIdAsync(MenuAddDto value)
+    {
+        
+        var entity = _mapper.Map<Menu>(value);
+        await _repo.AddAsync(entity);
+        return entity.Id;
+    }
+
     public Task<int> CreateAsync(MenuAddDto value)
     {
         var entity = _mapper.Map<Menu>(value);

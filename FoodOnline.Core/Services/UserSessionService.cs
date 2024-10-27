@@ -30,7 +30,6 @@ public class UserSessionService : IUserSessionService
 
         var affected = await _repo.AddAsync(entity);
         return affected <= 0 ? null : entity.Code;
-        return entity.Code;
     }
 
     public bool CheckCode(string code)

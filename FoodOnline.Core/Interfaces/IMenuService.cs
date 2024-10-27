@@ -7,4 +7,5 @@ namespace FoodOnline.Core.Interfaces;
 public interface IMenuService : IFlozaPagination<MenuViewDto, MenuAddDto, MenuUpdDto, MenuFilter>
 {
     Task<int> DeleteAsync(long id, CurrentUser currentUser, bool isHardDelete = false);
+    Task<long> CreateAndGetIdAsync(MenuAddDto value);
 }
