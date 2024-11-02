@@ -17,11 +17,20 @@ public class MenuHelper
 {
     private readonly IMenuService _service;
     private readonly RabbitMqConfigs _rabbitMqConfigs;
+    private readonly JsonSerializerSettings _jsonSettings;
 
     public MenuHelper(IMenuService service, IOptions<RabbitMqConfigs> rabbitMqConfigs)
     {
         _service = service;
         _rabbitMqConfigs = rabbitMqConfigs.Value;
+        _jsonSettings = new JsonSerializerSettings
+        {
+            ContractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new SnakeCaseNamingStrategy { ProcessDictionaryKeys = true }
+            },
+            Formatting = Formatting.Indented
+        };
     }
     
     public Task<Pagination<MenuViewDto>> GetPagedAsync(MenuFilter filter)
@@ -64,40 +73,20 @@ public class MenuHelper
 
             using var publisher = new Publisher(_rabbitMqConfigs);
             {
-                var settings = new JsonSerializerSettings
+                if (!string.IsNullOrEmpty(value.File))
                 {
-                    ContractResolver = new DefaultContractResolver
-                    {
-                        NamingStrategy = new SnakeCaseNamingStrategy { ProcessDictionaryKeys = true }
-                    },
-                    Formatting = Formatting.Indented
-                };
-                
-                var length = value.File.Length;
-                if (length < 0)
-                {
-                    return 0;
-                }
-
-                using var fileStream = value.File.OpenReadStream();
-                {
-                    var cts = new CancellationToken();
-                    var bytes = new byte[length];
-                    await fileStream.ReadAsync(bytes, 0, (int)value.File.Length, cts);
-                    var base64 = Convert.ToBase64String(bytes);
-
                     var request = JsonConvert.SerializeObject(new MessageMenuRequest
                     {
                         Note = "",
                         ReferenceId = result,
                         UploadType = (int)FileTypeEnum.File,
-                        File = base64,
+                        File = value.File,
                         UniqueId = value.Code,
-                    }, settings);
+                    }, _jsonSettings);
                 
                     publisher.Publish("upload-image", "upload-image-menu", request);
                 }
-            };
+            }
             
             transaction.Complete();
             
@@ -105,12 +94,40 @@ public class MenuHelper
         }
     }
 
-    public Task<int> UpdateAsync(MenuUpdDto value, CurrentUser currentUser)
+    public async Task<int> UpdateAsync(MenuUpdDto value, CurrentUser currentUser)
     {
-        value.ModifiedBy = currentUser.Id;
-        value.ModifiedAt = DateTime.UtcNow;
+        using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        {
+            value.ModifiedBy = currentUser.Id;
+            value.ModifiedAt = DateTime.UtcNow;
 
-        return _service.UpdateAsync(value);
+            var exist = await _service.FindAsync(value.Id);
+            if (exist != null && string.IsNullOrEmpty(exist.Code))
+            {
+                value.Code = Uuid7.Guid().ToString();
+            }
+            
+            using var publisher = new Publisher(_rabbitMqConfigs);
+            {
+                if (!string.IsNullOrEmpty(value.File))
+                {
+                    var request = JsonConvert.SerializeObject(new MessageMenuRequest
+                    {
+                        Note = "",
+                        ReferenceId = value.Id,
+                        UploadType = (int)FileTypeEnum.File,
+                        File = value.File,
+                        UniqueId = value.Code!,
+                    }, _jsonSettings);
+                
+                    publisher.Publish("upload-image", "upload-image-menu", request);
+                }
+            }
+            
+            var result = await _service.UpdateAsync(value);
+            transaction.Complete();
+            return result;
+        }
     }
 
     public Task<int> DeleteAsync(long id, CurrentUser currentUser, bool isHardDelete)

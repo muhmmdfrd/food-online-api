@@ -18,12 +18,11 @@ public class MenuViewDto : MenuDto
     public long Id { get; set; }
     public string DataStatusName { get; set; } = null!;
     public string MerchantName { get; set; } = null!;
-    public string? Picture => !string.IsNullOrEmpty(Code) ? $"http://127.0.0.1:8000/api/files/{Code}" : null;
 }
 
 public class MenuAddDto : MenuDto
 {
-    public required IFormFile File { get; set; }
+    public string? File { get; set; }
     public long? CreatedBy { get; set; }
     public DateTime? CreatedAt { get; set; }
     public long? ModifiedBy { get; set; }
@@ -33,6 +32,7 @@ public class MenuAddDto : MenuDto
 public class MenuUpdDto : MenuDto
 {
     public long Id { get; set; }
+    public string? File { get; set; }
     public long? ModifiedBy { get; set; }
     public DateTime? ModifiedAt { get; set; }
 }

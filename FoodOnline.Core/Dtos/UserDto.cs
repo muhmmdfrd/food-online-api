@@ -15,6 +15,7 @@ public class UserDto
     public long? PositionId { get; set; }
     public string? Email { get; set; }
     public string? PhoneNumber { get; set; }
+    public string? Code { get; set; }
 }
 
 public class UserViewDto : UserDto
@@ -39,6 +40,7 @@ public class UserAddDto : UserDto
     
     [JsonIgnore]
     public DateTime? ModifiedAt { get; set; }
+    public string? File { get; set; }
 }
 
 public class UserUpdDto : UserDto
@@ -50,6 +52,7 @@ public class UserUpdDto : UserDto
     
     [JsonIgnore]
     public DateTime? ModifiedAt { get; set; }
+    public string? File { get; set; }
 }
 
 public class UserFilter : TableFilter

@@ -33,6 +33,8 @@ public partial class User
 
     public string? FirebaseToken { get; set; }
 
+    public string? Code { get; set; }
+
     public virtual Position? Position { get; set; }
 
     public virtual Role Role { get; set; } = null!;
