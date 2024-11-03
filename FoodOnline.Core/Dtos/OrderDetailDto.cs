@@ -74,6 +74,7 @@ public class OrderDetailCaculateResultItemDto
     public string MenuName { get; set; } = null!;
     public int Qty { get; set; }
     public int Total { get; set; }
+    public string? Code { get; set; }
 }
 
 public class OrderDetailGroupByUser

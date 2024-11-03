@@ -143,7 +143,8 @@ public class OrderDetailHelper
             {
                 Qty = qty,
                 MenuName = t.Name,
-                Total = qty * t.Price
+                Total = qty * t.Price,
+                Code = t.Code
             };
             children.Add(item);
         }
