@@ -3,6 +3,7 @@ using System.Security.Claims;
 using System.Text;
 using System.Transactions;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Core.Settings;
 using Microsoft.Extensions.Options;
@@ -38,7 +39,7 @@ public class AuthHelper
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
             var existingSession = await _userSessionHelper.GetLastSessionAsync(user.Id);
-            if (!string.IsNullOrEmpty(existingSession))
+            if (!string.IsNullOrEmpty(existingSession) && user.RoleId != (int)RoleEnum.Sysadmin)
             {
                 await _userSessionHelper.InvalidateSessionAsync(existingSession);
             }
