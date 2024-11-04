@@ -37,7 +37,7 @@ public static class ServiceRegistration
         services.AddScoped<OrderPaymentHelper>();
         services.AddScoped<MenuHelper>();
         services.AddScoped<MerchantHelper>();
-        
+        services.AddScoped<DashboardHelper>();
         services.AddScoped<FirebaseHelper>();
     }
     
