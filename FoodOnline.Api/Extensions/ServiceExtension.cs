@@ -122,9 +122,15 @@ public static class ServiceExtension
                 {
                     context.Response.ContentType = AppConstant.ApplicationJson;
                     
-                    if (string.IsNullOrEmpty(context.Request.Headers.Authorization) || !string.IsNullOrEmpty(context.Error))
+                    if (string.IsNullOrEmpty(context.Request.Headers.Authorization))
                     {
                         var response = new ApiResponse<object>().Unauthorized().ToString();
+                        return context.Response.WriteAsync(response);
+                    }
+
+                    if (!string.IsNullOrEmpty(context.Error) && context.Error == "invalid_token")
+                    {
+                        var response = new ApiResponse<object>().SessionExpired().ToString();
                         return context.Response.WriteAsync(response);
                     }
                     

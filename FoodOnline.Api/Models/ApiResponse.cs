@@ -48,6 +48,16 @@ public class ApiResponse<T>
     {
         return new ApiResponse<T>(false, default, ResponseConstant.UNAUTHORIZED_CODE, ResponseConstant.UNAUTHORIZED_MESSAGE);
     }
+    
+    public ApiResponse<T> Unauthorized(string message)
+    {
+        return new ApiResponse<T>(false, default, ResponseConstant.UNAUTHORIZED_CODE, message);
+    }
+
+    public ApiResponse<T> SessionExpired()
+    {
+        return new ApiResponse<T>(false, default, ResponseConstant.SESSION_EXPIRED_CODE, ResponseConstant.SESSION_EXPIRED_MESSAGE);
+    }
 
     public ApiResponse<T> Forbidden()
     {
