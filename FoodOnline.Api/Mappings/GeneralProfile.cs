@@ -7,7 +7,7 @@ namespace FoodOnline.Api.Mappings;
 
 public class GeneralProfile : Profile
 {
-    private static readonly string[] IgnoredPropertyNames = ["CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "DataStatusId"];
+    private static readonly string[] IgnoredPropertyNames = ["CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "DataStatusId", "Code"];
 
     public GeneralProfile()
     {
