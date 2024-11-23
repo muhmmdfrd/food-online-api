@@ -4,6 +4,7 @@ using Flozacode.Extensions.SortExtension;
 using Flozacode.Models.Paginations;
 using Flozacode.Repository;
 using FoodOnline.Core.Dtos;
+using FoodOnline.Core.Enums;
 using FoodOnline.Core.Interfaces;
 using FoodOnline.Repository.Contexts;
 using FoodOnline.Repository.Entities;
@@ -98,6 +99,11 @@ public class OrderDetailService : IOrderDetailService
         {
             return Task.FromResult(new List<OrderDetailGroupByUser>());
         }
+
+        var user = _userRepo.AsQueryable
+            .AsNoTracking()
+            .Where(q => q.DataStatusId == (int)DataStatusEnum.Active)
+            .Select(q => new { q.Code, q.Id });
         
         var result =
             from detail in baseQuery
@@ -106,7 +112,8 @@ public class OrderDetailService : IOrderDetailService
             select new OrderDetailGroupByUser
             {
                 Name = grp.FirstOrDefault(q => q.UserId == grp.Key.UserId).UserName,
-                Details = grp.Select(q => new OrderDetailGroupByUserItem()
+                Code = user.FirstOrDefault(q => q.Id == grp.Key.UserId).Code,
+                Details = grp.Select(q => new OrderDetailGroupByUserItem
                 {
                     Price = q.Price,
                     MenuName = q.MenuName,

@@ -81,6 +81,7 @@ public class OrderDetailGroupByUser
 {
     public string Name { get; set; } = null!;
     public int Total { get; set; }
+    public string Code { get; set; } = null!;
     public List<OrderDetailGroupByUserItem> Details { get; set; } = [];
 }
 
