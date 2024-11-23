@@ -65,6 +65,7 @@ public class OrderService : IOrderService
     public Task<int> CreateAsync(OrderAddDto value)
     {
         var entity = _mapper.Map<Order>(value);
+        entity.Code = value.Code;
         return _repo.AddAsync(entity);
     }
 
@@ -83,12 +84,18 @@ public class OrderService : IOrderService
         return _repo.AsQueryable.AsNoTracking().Any(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
     }
 
-    public OrderViewDto? GetActiveOrderByCode(string code)
+    public long? GetActiveOrderByCode(string code)
     {
-        return _repo.AsQueryable
+        var order = _repo.AsQueryable
             .AsNoTracking()
-            .ProjectTo<OrderViewDto>(_mapper.ConfigurationProvider)
             .FirstOrDefault(q => q.Code == code && q.StatusId == (int)OrderStatusEnum.Active);
+
+        if (order == null)
+        {
+            return null;
+        }
+
+        return order.Id;
     }
 
     public long? GetOrderActiveId()

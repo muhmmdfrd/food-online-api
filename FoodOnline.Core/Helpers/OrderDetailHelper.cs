@@ -50,8 +50,8 @@ public class OrderDetailHelper
         using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
         {
             var code = OrderUtils.GenerateCode(now);
-            var order = _orderService.GetActiveOrderByCode(code);
-            if (order == null)
+            var orderId = _orderService.GetActiveOrderByCode(code);
+            if (orderId == null)
             {
                 return OrderResponseEnum.NotOpen;
             }
@@ -77,7 +77,7 @@ public class OrderDetailHelper
                     Total = menu.Price * item.Qty,
                     MenuId = menu.Id,
                     MenuName = menu.Name,
-                    OrderId = order.Id,
+                    OrderId = (long)orderId,
                     CreatedBy = currentUser.Id,
                     CreatedAt = now,
                     ModifiedBy = currentUser.Id,
@@ -93,7 +93,7 @@ public class OrderDetailHelper
                 return OrderResponseEnum.FailedToOrder;
             }
 
-            var payment = _orderPaymentService.IsPaymentExist(order.Id, currentUser.Id);
+            var payment = _orderPaymentService.IsPaymentExist((long)orderId, currentUser.Id);
             if (payment != null)
             {
                 payment.TotalPayment = value.PaymentAmount;
@@ -106,7 +106,7 @@ public class OrderDetailHelper
                 var total = orderDetailDtos.Sum(q => q.Total);
                 affected = await _orderPaymentService.CreateAsync(new OrderPaymentAddDto
                 {
-                    OrderId = order.Id,
+                    OrderId = (long)orderId,
                     UserId = currentUser.Id,
                     GrandTotal = total,
                     TotalPayment = value.PaymentAmount,
