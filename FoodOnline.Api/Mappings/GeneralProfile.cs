@@ -7,7 +7,7 @@ namespace FoodOnline.Api.Mappings;
 
 public class GeneralProfile : Profile
 {
-    private static readonly string[] IgnoredPropertyNames = ["CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "DataStatusId", "Code"];
+    private static readonly string[] IgnoredPropertyNames = ["CreatedAt", "CreatedBy", "ModifiedAt", "ModifiedBy", "DataStatusId"];
 
     public GeneralProfile()
     {
@@ -18,7 +18,8 @@ public class GeneralProfile : Profile
             .ForMember(d => d.PositionName, conf => conf.MapFrom(e => e.Position == null ? null : e.Position.Name))
             .ReverseMap();
         CreateMap<UserAddDto, User>();
-        CreateMap<UserUpdDto, User>();
+        CreateMap<UserUpdDto, User>()
+            .ForMember(d => d.Code, conf => conf.Ignore());
         
         CreateMap<Role, RoleViewDto>()
             .ReverseMap();
@@ -55,7 +56,8 @@ public class GeneralProfile : Profile
             .ForMember(d => d.MerchantName, conf => conf.MapFrom(e => e.Merchant.Name))
             .ReverseMap();
         CreateMap<MenuAddDto, Menu>();
-        CreateMap<MenuUpdDto, Menu>();
+        CreateMap<MenuUpdDto, Menu>()
+            .ForMember(d => d.Code, conf => conf.Ignore());
         
         CreateMap<Merchant, MerchantViewDto>()
             .ForMember(d => d.DataStatusName, conf => conf.MapFrom(e => ((DataStatusEnum)e.DataStatusId).ToString()))
