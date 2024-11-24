@@ -18,14 +18,21 @@ public class OrderHelper
     private readonly IOrderService _service;
     private readonly IFlozaRepo<Order, AppDbContext> _repo;
     private readonly IFlozaRepo<User, AppDbContext> _userRepo;
+    private readonly IFlozaRepo<OrderPayment, AppDbContext> _paymentRepo;
     private readonly FirebaseHelper _firebaseHelper;
 
-    public OrderHelper(IOrderService service, IFlozaRepo<Order, AppDbContext> repo, IFlozaRepo<User, AppDbContext> userRepo, FirebaseHelper firebaseHelper)
+    public OrderHelper(
+        IOrderService service, 
+        IFlozaRepo<Order, AppDbContext> repo, 
+        IFlozaRepo<User, AppDbContext> userRepo, 
+        FirebaseHelper firebaseHelper, 
+        IFlozaRepo<OrderPayment, AppDbContext> paymentRepo)
     {
         _service = service;
         _repo = repo;
         _userRepo = userRepo;
         _firebaseHelper = firebaseHelper;
+        _paymentRepo = paymentRepo;
     }
 
     public Task<Pagination<OrderViewDto>> GetPagedAsync(OrderFilter filter)
@@ -68,20 +75,44 @@ public class OrderHelper
             var result = await _service.CreateAsync(value);
             transaction.Complete();
 
-            Task.Run(() =>
-            {
-                var tokens = _userRepo.AsQueryable
-                    .AsNoTracking()
-                    .Where(q => !string.IsNullOrEmpty(q.FirebaseToken))
-                    .Select(t => t.FirebaseToken).ToList();
-
-                _firebaseHelper.SendBroadcastAsync(new Notification
-                {
-                    Title = "Order telah dibuka",
-                    Body = "Halo gusy, orderan telah dibuka yaa! Silakan pesan biar ngga laper"
-                }, tokens!);
-            });
+            FirebaseNotification();
             
+            return result;
+        }
+    }
+
+    public async Task FirebaseNotification()
+    {
+        var tokens = _userRepo.AsQueryable
+                .AsNoTracking()
+                .Where(q => !string.IsNullOrEmpty(q.FirebaseToken))
+                .Select(t => t.FirebaseToken)
+                .ToList();
+
+        _firebaseHelper.SendBroadcastAsync(new Notification
+        {
+            Title = "Order telah dibuka",
+            Body = "Halo gusy, orderan telah dibuka yaa! Silakan pesan biar ngga laper"
+        }, tokens!);
+    }
+
+    public async Task<int> UpdatePayment(OrderUpdatePaymentRequest request, CurrentUser currentUser)
+    {
+        using var transaction = new TransactionScope(TransactionScopeAsyncFlowOption.Enabled);
+        {
+            var orderPayment = _paymentRepo.AsQueryable.FirstOrDefault(q => q.OrderId == request.OrderId && q.UserId == request.UserId);
+            if (orderPayment == null)
+            {
+                return 0;
+            }
+
+            orderPayment.PaymentStatusId = (int)OrderPaymentStatusEnum.Completed;
+            orderPayment.ModifiedAt = DateTime.UtcNow;
+            orderPayment.ModifiedBy = currentUser.Id;
+
+            var result = await _paymentRepo.UpdateAsync(orderPayment);
+            transaction.Complete();
+
             return result;
         }
     }

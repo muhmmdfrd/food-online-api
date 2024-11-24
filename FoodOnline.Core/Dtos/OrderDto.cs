@@ -27,6 +27,8 @@ public class OrderViewHistory : OrderViewDto
 
 public class OrderViewDetailHistory
 {
+    public required long OrderId { get; set; }
+    public required long UserId { get; set; }
     public string Code { get; set; } = null!;
     public DateTime Date { get; set; }
     public int Total { get; set; }
@@ -47,6 +49,7 @@ public class OrderViewDetailPaymentHistory
 {
     public int TotalPayment { get; set; }
     public int Cashback { get; set; }
+    public int StatusId { get; set; }
 }
 
 public class OrderAddDto : OrderDto
@@ -74,3 +77,9 @@ public class OrderUpdDto : OrderDto
 }
 
 public class OrderFilter : TableFilter{}
+
+public class OrderUpdatePaymentRequest
+{
+    public required long OrderId { get; set; }
+    public required long UserId { get; set; }
+}

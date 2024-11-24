@@ -87,17 +87,11 @@ public class OrdersController : FlozaApiController
 
     [HttpPost("firebase")]
     [AllowAnonymous]
-    public async Task<IActionResult> SendFirebase([FromBody] UserUpdTokenRequest request)
+    public async Task<IActionResult> SendFirebase([FromBody] List<string> tokens)
     {
         try
         {
-            var notification = new Notification
-            {
-                Body = "Ini contoh aja.",
-                Title = "Contoh"
-            };
-        
-            var result = await _firebaseHelper.SendMessageAsync(notification, request.Token);
+            _helper.FirebaseNotification();
             return ApiOK();
         }
         catch (Exception e)
@@ -105,6 +99,28 @@ public class OrdersController : FlozaApiController
             Console.WriteLine(e);
             return ApiDataInvalid(e.Message);
         }
-       
+    }
+    
+    [HttpPut("payment")]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status200OK)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(typeof(ApiResponse<>), StatusCodes.Status500InternalServerError)]
+    public async Task<IActionResult> UpdatePaymentStatus([FromBody] OrderUpdatePaymentRequest request)
+    {
+        try
+        {
+            var result = await _helper.UpdatePayment(request, CurrentUser);
+            if (result <= 0)
+            {
+                return ApiDataInvalid("Data not updated.");
+            }
+            
+            return ApiOK("Data updated.");
+        }
+        catch (Exception e)
+        {
+            Console.WriteLine(e);
+            return ApiDataInvalid(e.Message);
+        }
     }
 }
